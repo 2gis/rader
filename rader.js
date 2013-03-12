@@ -49,9 +49,13 @@
             bumpRadius: elements.runners[0][dir.offset], // firstRunner.offsetWidth | Height
             points: [],
             start: 0,
-            end: 10,
-            runners: [0, 10]
+            end: 10
         }
+        if (params.points && params.points.length) {
+            defaultParams.start = params.points[0];
+            defaultParams.end = params.points[params.points.length - 1];
+        }
+        defaultParams.runners = [defaultParams.start, defaultParams.end];
         for (var key in defaultParams) {
             if (params[key] === undefined) {
                 params[key] = defaultParams[key];
@@ -127,7 +131,7 @@
         var xToPxMem = [];
         function xToPx(x) {
             if (xToPxMem[x] === undefined) {
-                xToPxMem[x] = ((x - params.start) / delta + params.start) * elements.track[dir.client];
+                xToPxMem[x] = ((x - params.start) / delta) * elements.track[dir.client];
             }
 
             return xToPxMem[x];
@@ -216,10 +220,10 @@
             // Sticking runner
             xSticky = getXofClosestPoint(x, sign);
             if (xSticky !== undefined && xSticky !== x && Math.abs(xSticky - x) < params.stickingRadius) {
-                if (!stickTimeout) {
-                    $(elements.track).addClass(params.transCls);
+                if (!stickTimeout && params.transCls) {
+                    dom(elements.track).addClass(params.transCls);
                     stickTimeout = setTimeout(function() {
-                        $(elements.track).removeClass(params.transCls);
+                        dom(elements.track).removeClass(params.transCls);
                         stickTimeout = undefined;
                     }, 500);
                 }
@@ -277,20 +281,18 @@
 
         // Coordinates initialization
         for (var i = 0 ; i < params.points.length ; i++) {
-            var x = params.points[i] / delta * elements.track[dir.client],
-                pos = {};
+            var pos = {};
 
-            pos[dir.start] = x + 'px';
+            pos[dir.start] = xToPx(params.points[i]) + 'px';
             dom(elements.points[i]).css(pos);
         }
 
         // Runners position & drag initialization
         for (var i = 0 ; i < params.runners.length ; i++) {
-            var x = params.runners[i] / delta * elements.track[dir.client],
-                pos = {};
+            var pos = {};
 
-            runnersCurrentPos[i] = runnersInitialPos[i] = x;
-            pos[dir.start] = x + 'px';
+            runnersCurrentPos[i] = runnersInitialPos[i] = xToPx(params.runners[i]);
+            pos[dir.start] = runnersCurrentPos[i] + 'px';
             dom(elements.runners[i]).css(pos);
 
             event(elements.runners[i], 'mousedown', (function(n) {
@@ -301,6 +303,15 @@
                 }
             })(i));
         }
+
+        // Active track position initialization
+        var x1 = xToPx(params.runners[0]),
+            x2 = xToPx(params.runners[params.runners.length - 1]),
+            pos = {};
+
+        pos[dir.start] = x1 + 'px';
+        pos[dir.size] = Math.abs(x2 - x1) + 'px';
+        dom(elements.trackActive).css(pos);
 
         updatePoints(1);
 
@@ -339,15 +350,6 @@
                 dom(elements.trackActive).css(pos);
             }
         });
-
-        // Active track position initialization
-        var x1 = params.runners[0] / delta * elements.track[dir.client],
-            x2 = params.runners[params.runners.length - 1] / delta * elements.track[dir.client],
-            pos = {};
-
-        pos[dir.start] = x1 + 'px';
-        pos[dir.size] = Math.abs(x2 - x1) + 'px';
-        dom(elements.trackActive).css(pos);
     }
 
     if ($ && $.fn) {
