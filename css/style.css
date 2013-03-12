@@ -4,19 +4,19 @@
 .page__body {
 
 }
-.slider {
+.rader {
     position: relative;
     margin: 0 auto;
     width: 600px;
 }
-.slider__track {
+.rader__track {
     position: relative;
     height: 6px;
     /*margin: 10px;*/
     border-radius: 3px;
     background: url(../pics/gray.png) repeat-x;
 }
-.slider__track-active {
+.rader__track-active {
     position: absolute;
     top: -1px;
     left: 0;
@@ -24,12 +24,12 @@
     border-radius: 4px;
     background: url(../pics/blue.png) repeat-x;
 }
-.slider__point {
+.rader__point {
     position: absolute;
     width: 0;
     height: 0;
 }
-.slider__point:before {
+.rader__point:before {
     content: '';
     position: absolute;
     left: -5px;
@@ -39,20 +39,20 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-.slider__point_type_l:before {
+.rader__point_type_l:before {
     background-image: url(../pics/point-left.png);
 }
-.slider__point_type_lr:before {
+.rader__point_type_lr:before {
     left: -5px;
     background-image: url(../pics/point-center.png);
 }
-.slider__point_type_r:before {
+.rader__point_type_r:before {
     background-image: url(../pics/point-right.png);
 }
-.slider__point_range_in {
+.rader__point_range_in {
     z-index: 1;
 }
-.slider__point:after {
+.rader__point:after {
     content: '';
     opacity: 0;
     position: absolute;
@@ -64,20 +64,20 @@
     -webkit-transition: all .3s;
     transition: all .3s;
 }
-.slider__point_range_in:after {
+.rader__point_range_in:after {
     opacity: 1;
 }
 
-.slider__runner {
+.rader__runner {
     position: absolute;
     width: 0;
     height: 0;
     z-index: 1;
 }
-.slider__runner:active {
+.rader__runner:active {
     z-index: 2;
 }
-.slider__runner:before {
+.rader__runner:before {
     content: '';
     position: absolute;
     top: -8px;
@@ -87,17 +87,17 @@
     border-radius: 11px;
     background: url(../pics/runner.png);
 }
-.slider__runner_pos_left:before {
+.rader__runner_pos_left:before {
     background: url(../pics/runner-left.png);
 }
-.slider__runner_pos_right:before {
+.rader__runner_pos_right:before {
     background: url(../pics/runner-right.png);
 }
-.slider__track_transition_on .slider__runner {
+.rader__track_transition_on .rader__runner {
     -webkit-transition: all .1s ease-in;
     transition: all .1s ease-in;
 }
-.slider__track_transition_on .slider__track-active {
+.rader__track_transition_on .rader__track-active {
     -webkit-transition: all .1s ease-in;
     transition: all .1s ease-in;
 }

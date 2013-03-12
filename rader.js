@@ -1,13 +1,13 @@
 (function(window, undefined) {
     var $ = window.jQuery;
 
-    var slider = function(params) {
+    var rader = function(params) {
         params.root = params.root || this;
 
         return new init(params);
     };
 
-    // slider object constructor
+    // rader object constructor
     var init = function(params) {
         var elements = {},
             delta,
@@ -351,8 +351,8 @@
     }
 
     if ($ && $.fn) {
-        $.fn.slider = slider;
+        $.fn.rader = rader;
     }
 
-    window.slider = slider;
+    window.rader = rader;
 })( window );
