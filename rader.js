@@ -137,6 +137,15 @@
             return xToPxMem[x];
         }
 
+        var pxToXMem = [];
+        function pxToX(px) {
+            if (pxToXMem[px] === undefined) {
+                pxToXMem[px] = px / elements.track[dir.client] * delta + params.start;
+            }
+
+            return pxToXMem[px];
+        }
+
         // Getting coordinate of closest to @x point
         function getXofClosestPoint(x, sign) {
             var xret = x,
@@ -279,6 +288,33 @@
             }
         }
 
+        function update(e, force) {
+            if (e) {
+                var dx = e.clientX - x0drag,
+                    pos = {},
+                    x;
+
+                x = runnersInitialPos[drag] + dx;
+                tryMoveRunner(drag, limitPos(x));
+            }
+
+            // Updating activation state of all points
+            updatePoints(force);
+
+            // Positioning active track
+            var pos = {};
+            pos[dir.start] = getMin(runnersCurrentPos) + 'px';
+            pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
+            dom(elements.trackActive).css(pos);
+
+            if (typeof params.change === 'function') {
+                params.change({
+                    min: pxToX(getMin(runnersCurrentPos)),
+                    max: pxToX(getMax(runnersCurrentPos))
+                });
+            }
+        }
+
         // Coordinates initialization
         for (var i = 0 ; i < params.points.length ; i++) {
             var pos = {};
@@ -313,7 +349,7 @@
         pos[dir.size] = Math.abs(x2 - x1) + 'px';
         dom(elements.trackActive).css(pos);
 
-        updatePoints(1);
+        update(0, 1);
 
         // Dragend
         event(document, 'mouseup blur', function() {
@@ -332,22 +368,7 @@
 
         event(params.root, 'mousemove', function(e) { // document, not window, for ie8
             if (drag != -1) {
-                var dx = e.clientX - x0drag,
-                    pos = {},
-                    xReal,
-                    x;
-
-                x = runnersInitialPos[drag] + dx;
-                tryMoveRunner(drag, limitPos(x));
-
-                // Updating activation state of all points
-                updatePoints();
-
-                // Positioning active track
-                var pos = {};
-                pos[dir.start] = getMin(runnersCurrentPos) + 'px';
-                pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
-                dom(elements.trackActive).css(pos);
+                update(e);
             }
         });
     }
