@@ -1,16 +1,15 @@
 (function(window, undefined) {
+    var $ = window.jQuery;
 
     var slider = function(params) {
-        params = params || {};
-        params.root = this;
+        params.root = params.root || this;
 
         return new init(params);
     };
 
     // slider object constructor
     var init = function(params) {
-        var dom = {},
-            //params = {},
+        var elements = {},
             delta,
             dir = { // Direction: left-to-right | top-to-bottom
                 start: 'left',
@@ -20,6 +19,8 @@
             },
             defaultParams,
             event,
+            dom,
+            selector,
             drag = -1, // No runner dragged
             runnersInitialPos = [], // Current absolute runners position (before and after drag)
             runnersCurrentPos = [], // Current (in drag mode) absolute runners position
@@ -29,6 +30,52 @@
         event = params.event || function(elem, event, func, mode) {
             $(elem)[mode || 'on'](event, func);
         };
+
+        // DOM utility
+        dom = params.dom || $;
+
+        // Selector engine
+        selector = params.selector || $;
+
+        // Dom initialization
+        elements.track = params.root[0];
+        elements.trackActive = selector(params.trackActive, elements.track)[0];
+        elements.points = selector(params.point, elements.track);
+        elements.runners = selector(params.runner, elements.track);
+
+        // Params initialization
+        defaultParams = { // Default input parameters
+            stickingRadius: 0,
+            bumpRadius: elements.runners[0][dir.offset], // firstRunner.offsetWidth | Height
+            points: [],
+            start: 0,
+            end: 10,
+            runners: [0, 10]
+        }
+        for (var key in defaultParams) {
+            if (params[key] === undefined) {
+                params[key] = defaultParams[key];
+            }
+        }
+        
+        delta = Math.abs(params.end - params.start);
+
+        // Validation (dev mode)
+        if (params.points.length !== elements.points.length) {
+            console.error('params.points.length !== elements.points.length');
+        }
+        if (params.runners.length !== elements.runners.length) {
+            console.error('params.runners.length !== elements.runners.length');
+        }
+        if (!selector) {
+            console.error('No selector engine found');
+        }
+        if (!dom) {
+            console.error('No dom utility found');
+        }
+        if (!event) {
+            console.error('No event manager found');
+        }
 
         // Text selection start preventing
         function dontStartSelect() {
@@ -65,8 +112,8 @@
         }
 
         function limitPos(x) {
-            if (x > dom.track[dir.client]) {
-                x = dom.track[dir.client];
+            if (x > elements.track[dir.client]) {
+                x = elements.track[dir.client];
             }
 
             if (x < 0) {
@@ -80,7 +127,7 @@
         var xToPxMem = [];
         function xToPx(x) {
             if (xToPxMem[x] === undefined) {
-                xToPxMem[x] = ((x - params.start) / delta + params.start) * dom.track[dir.client];
+                xToPxMem[x] = ((x - params.start) / delta + params.start) * elements.track[dir.client];
             }
 
             return xToPxMem[x];
@@ -170,9 +217,9 @@
             xSticky = getXofClosestPoint(x, sign);
             if (xSticky !== undefined && xSticky !== x && Math.abs(xSticky - x) < params.stickingRadius) {
                 if (!stickTimeout) {
-                    $(dom.track).addClass(params.transCls);
+                    $(elements.track).addClass(params.transCls);
                     stickTimeout = setTimeout(function() {
-                        $(dom.track).removeClass(params.transCls);
+                        $(elements.track).removeClass(params.transCls);
                         stickTimeout = undefined;
                     }, 500);
                 }
@@ -190,11 +237,11 @@
                 }
             }
 
-            // Positioning dom runner
+            // Positioning elements runner
             runnersCurrentPos[num] = x;
             var pos = {};
             pos[dir.start] = runnersCurrentPos[num] + 'px';
-            $(dom.runners[num]).css(pos);
+            dom(elements.runners[num]).css(pos);
 
             return x;
         }
@@ -208,7 +255,7 @@
                     pointsWasInRagne[i] = pointsInRagne[i];
                 }
 
-                for (var i = 0 ; i < dom.points.length ; i++) {
+                for (var i = 0 ; i < elements.points.length ; i++) {
                     if (xToPx(params.points[i]) >= runnersCurrentPos[0] && xToPx(params.points[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
                         pointsInRagne[i] = 1;
                     } else {
@@ -219,65 +266,36 @@
                 for (var i = 0 ; i < pointsInRagne.length ; i++) {
                     if (pointsInRagne[i] != pointsWasInRagne[i]) { // Mega profit (+few ms per point change)
                         if (pointsInRagne[i]) {
-                            $(dom.points[i]).addClass(params.pointInRangeCls);
+                            dom(elements.points[i]).addClass(params.pointInRangeCls);
                         } else {
-                            $(dom.points[i]).removeClass(params.pointInRangeCls);
+                            dom(elements.points[i]).removeClass(params.pointInRangeCls);
                         }
                     }
                 }
             }
         }
 
-        // Dom initialization
-        dom.track = params.root[0];
-        dom.trackActive = $(dom.track).find(params.trackActive)[0];
-        dom.points = $(dom.track).find(params.point);
-        dom.runners = $(dom.track).find(params.runner);
-
-        // Params initialization
-        defaultParams = { // Default input parameters
-            stickingRadius: 0,
-            bumpRadius: dom.runners[0][dir.offset], // firstRunner.offsetWidth | Height
-            points: [],
-            start: 0,
-            end: 10,
-            runners: [0, 10]
-        }
-        for (var key in defaultParams) {
-            if (params[key] === undefined) {
-                params[key] = defaultParams[key];
-            }
-        }
         
-        delta = Math.abs(params.end - params.start);
-
-        // Validation (dev mode)
-        if (params.points.length !== dom.points.length) {
-            console.error('params.points.length !== dom.points.length');
-        }
-        if (params.runners.length !== dom.runners.length) {
-            console.error('params.runners.length !== dom.runners.length');
-        }
 
         // Coordinates initialization
         for (var i = 0 ; i < params.points.length ; i++) {
-            var x = params.points[i] / delta * dom.track[dir.client],
+            var x = params.points[i] / delta * elements.track[dir.client],
                 pos = {};
 
             pos[dir.start] = x + 'px';
-            $(dom.points[i]).css(pos);
+            dom(elements.points[i]).css(pos);
         }
 
         // Runners position & drag initialization
         for (var i = 0 ; i < params.runners.length ; i++) {
-            var x = params.runners[i] / delta * dom.track[dir.client],
+            var x = params.runners[i] / delta * elements.track[dir.client],
                 pos = {};
 
             runnersCurrentPos[i] = runnersInitialPos[i] = x;
             pos[dir.start] = x + 'px';
-            $(dom.runners[i]).css(pos);
+            dom(elements.runners[i]).css(pos);
 
-            event(dom.runners[i], 'mousedown', (function(n) {
+            event(elements.runners[i], 'mousedown', (function(n) {
                 return function(e) {
                     e.preventDefault(); // Text selection disabling in Opera... and all other browsers?
                     selection(); // Disable text selection in ie8
@@ -320,21 +338,23 @@
                 var pos = {};
                 pos[dir.start] = getMin(runnersCurrentPos) + 'px';
                 pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
-                $(dom.trackActive).css(pos);
+                dom(elements.trackActive).css(pos);
             }
         });
 
         // Active track position initialization
-        var x1 = params.runners[0] / delta * dom.track[dir.client],
-            x2 = params.runners[params.runners.length - 1] / delta * dom.track[dir.client],
+        var x1 = params.runners[0] / delta * elements.track[dir.client],
+            x2 = params.runners[params.runners.length - 1] / delta * elements.track[dir.client],
             pos = {};
 
         pos[dir.start] = x1 + 'px';
         pos[dir.size] = Math.abs(x2 - x1) + 'px';
-        $(dom.trackActive).css(pos);
-
-        
+        dom(elements.trackActive).css(pos);
     }
 
-    $.fn.slider = slider;
+    if ($ && $.fn) {
+        $.fn.slider = slider;
+    }
+
+    window.slider = slider;
 })( window );
