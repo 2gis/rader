@@ -247,7 +247,7 @@
         }
 
         // Updating points look (in range | not in range)
-        function updatePoints() {
+        function updatePoints(force) {
             if (params.pointInRangeCls) {
                 // Cloning pointsInRagne to pointsWasInRagne
                 var pointsWasInRagne = [];
@@ -264,7 +264,7 @@
                 }
 
                 for (var i = 0 ; i < pointsInRagne.length ; i++) {
-                    if (pointsInRagne[i] != pointsWasInRagne[i]) { // Mega profit (+few ms per point change)
+                    if (pointsInRagne[i] != pointsWasInRagne[i] || force) { // Mega profit (+few ms per point change)
                         if (pointsInRagne[i]) {
                             dom(elements.points[i]).addClass(params.pointInRangeCls);
                         } else {
@@ -274,8 +274,6 @@
                 }
             }
         }
-
-        
 
         // Coordinates initialization
         for (var i = 0 ; i < params.points.length ; i++) {
@@ -304,7 +302,7 @@
             })(i));
         }
 
-        updatePoints();
+        updatePoints(1);
 
         // Dragend
         event(document, 'mouseup blur', function() {
@@ -321,7 +319,7 @@
             x0drag = e.clientX;
         });
 
-        event(document, 'mousemove', function(e) { // document, not window, for ie8
+        event(params.root, 'mousemove', function(e) { // document, not window, for ie8
             if (drag != -1) {
                 var dx = e.clientX - x0drag,
                     pos = {},
