@@ -199,6 +199,35 @@
             return x;
         }
 
+        // Updating points look (in range | not in range)
+        function updatePoints() {
+            if (params.pointInRangeCls) {
+                // Cloning pointsInRagne to pointsWasInRagne
+                var pointsWasInRagne = [];
+                for (var i = 0 ; i < pointsInRagne.length ; i++) {
+                    pointsWasInRagne[i] = pointsInRagne[i];
+                }
+
+                for (var i = 0 ; i < dom.points.length ; i++) {
+                    if (xToPx(params.points[i]) >= runnersCurrentPos[0] && xToPx(params.points[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
+                        pointsInRagne[i] = 1;
+                    } else {
+                        pointsInRagne[i] = 0;
+                    }
+                }
+
+                for (var i = 0 ; i < pointsInRagne.length ; i++) {
+                    if (pointsInRagne[i] != pointsWasInRagne[i]) { // Mega profit (+few ms per point change)
+                        if (pointsInRagne[i]) {
+                            $(dom.points[i]).addClass(params.pointInRangeCls);
+                        } else {
+                            $(dom.points[i]).removeClass(params.pointInRangeCls);
+                        }
+                    }
+                }
+            }
+        }
+
         // Dom initialization
         dom.track = params.root[0];
         dom.trackActive = $(dom.track).find(params.trackActive)[0];
@@ -257,6 +286,8 @@
             })(i));
         }
 
+        updatePoints();
+
         // Dragend
         event(document, 'mouseup blur', function() {
             for (var i = 0 ; i < runnersInitialPos.length ; i++) {
@@ -283,31 +314,7 @@
                 tryMoveRunner(drag, limitPos(x));
 
                 // Updating activation state of all points
-                if (params.pointInRangeCls) {
-                    // Cloning pointsInRagne to pointsWasInRagne
-                    var pointsWasInRagne = [];
-                    for (var i = 0 ; i < pointsInRagne.length ; i++) {
-                        pointsWasInRagne[i] = pointsInRagne[i];
-                    }
-
-                    for (var i = 0 ; i < dom.points.length ; i++) {
-                        if (xToPx(params.points[i]) >= runnersCurrentPos[0] && xToPx(params.points[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
-                            pointsInRagne[i] = 1;
-                        } else {
-                            pointsInRagne[i] = 0;
-                        }
-                    }
-
-                    for (var i = 0 ; i < pointsInRagne.length ; i++) {
-                        if (pointsInRagne[i] != pointsWasInRagne[i]) { // Mega profit (+few ms per point change)
-                            if (pointsInRagne[i]) {
-                                $(dom.points[i]).addClass(params.pointInRangeCls);
-                            } else {
-                                $(dom.points[i]).removeClass(params.pointInRangeCls);
-                            }
-                        }
-                    }
-                }
+                updatePoints();
 
                 // Positioning active track
                 var pos = {};
@@ -331,27 +338,3 @@
 
     $.fn.slider = slider;
 })( window );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
