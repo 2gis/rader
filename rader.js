@@ -366,7 +366,7 @@
             x0drag = e.clientX;
         });
 
-        event(params.root, 'mousemove', function(e) { // document, not window, for ie8
+        event(document, 'mousemove', function(e) { // document, not window, for ie8
             if (drag != -1) {
                 update(e);
             }
