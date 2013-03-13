@@ -39,9 +39,9 @@
 
         // Dom initialization
         elements.track = params.root[0];
-        elements.trackActive = selector(params.trackActive, elements.track)[0];
-        elements.points = selector(params.point, elements.track);
-        elements.runners = selector(params.runner, elements.track);
+        elements.trackActive = params.trackActive[0] || params.trackActive;
+        elements.points = params.points;
+        elements.runners = params.runners;
 
         // Params initialization
         defaultParams = { // Default input parameters
@@ -49,13 +49,14 @@
             bumpRadius: elements.runners[0][dir.offset], // firstRunner.offsetWidth | Height
             points: [],
             start: 0,
-            end: 10
+            end: 10,
+            pointsPos: []
         }
-        if (params.points && params.points.length) {
-            defaultParams.start = params.points[0];
-            defaultParams.end = params.points[params.points.length - 1];
+        if (params.pointsPos && params.pointsPos.length) {
+            defaultParams.start = params.pointsPos[0];
+            defaultParams.end = params.pointsPos[params.pointsPos.length - 1];
         }
-        defaultParams.runners = [defaultParams.start, defaultParams.end];
+        defaultParams.runnersPos = [defaultParams.start, defaultParams.end];
         for (var key in defaultParams) {
             if (params[key] === undefined) {
                 params[key] = defaultParams[key];
@@ -65,8 +66,8 @@
         delta = Math.abs(params.end - params.start);
 
         // Validation (dev mode)
-        if (params.points.length !== elements.points.length) {
-            console.error('params.points.length !== elements.points.length');
+        if (params.pointsPos && params.pointsPos.length !== elements.points.length) {
+            console.error('params.pointsPos.length !== elements.points.length');
         }
         if (params.runners.length !== elements.runners.length) {
             console.error('params.runners.length !== elements.runners.length');
@@ -153,8 +154,8 @@
                 px,
                 dxmin = 9999;
 
-            for (var i = 0 ; i < params.points.length ; i++) {
-                px = xToPx(params.points[i]);
+            for (var i = 0 ; i < params.pointsPos.length ; i++) {
+                px = xToPx(params.pointsPos[i]);
 
                 dx = Math.abs(px - x);
 
@@ -178,8 +179,8 @@
                 return x;
             }
 
-            for (var i = 0 ; i < params.points.length ; i++) { // 2
-                px = xToPx(params.points[i]);
+            for (var i = 0 ; i < params.pointsPos.length ; i++) { // 2
+                px = xToPx(params.pointsPos[i]);
                 dx = Math.abs(px - x);
 
                 if ((px * sign > x * sign) && dx < dxmin) {
@@ -269,7 +270,7 @@
                 }
 
                 for (var i = 0 ; i < elements.points.length ; i++) {
-                    if (xToPx(params.points[i]) >= runnersCurrentPos[0] && xToPx(params.points[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
+                    if (xToPx(params.pointsPos[i]) >= runnersCurrentPos[0] && xToPx(params.pointsPos[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
                         pointsInRagne[i] = 1;
                     } else {
                         pointsInRagne[i] = 0;
@@ -309,25 +310,27 @@
 
             if (typeof params.change === 'function') {
                 params.change({
-                    min: pxToX(getMin(runnersCurrentPos)),
-                    max: pxToX(getMax(runnersCurrentPos))
+                    minPos: pxToX(getMin(runnersCurrentPos)),
+                    maxPos: pxToX(getMax(runnersCurrentPos)),
+                    minVal: getMin(runnersCurrentPos),
+                    maxVal: getMax(runnersCurrentPos)
                 });
             }
         }
 
         // Coordinates initialization
-        for (var i = 0 ; i < params.points.length ; i++) {
+        for (var i = 0 ; i < params.pointsPos.length ; i++) {
             var pos = {};
 
-            pos[dir.start] = xToPx(params.points[i]) + 'px';
+            pos[dir.start] = xToPx(params.pointsPos[i]) + 'px';
             dom(elements.points[i]).css(pos);
         }
 
         // Runners position & drag initialization
-        for (var i = 0 ; i < params.runners.length ; i++) {
+        for (var i = 0 ; i < params.runnersPos.length ; i++) {
             var pos = {};
 
-            runnersCurrentPos[i] = runnersInitialPos[i] = xToPx(params.runners[i]);
+            runnersCurrentPos[i] = runnersInitialPos[i] = xToPx(params.runnersPos[i]);
             pos[dir.start] = runnersCurrentPos[i] + 'px';
             dom(elements.runners[i]).css(pos);
 
@@ -341,8 +344,8 @@
         }
 
         // Active track position initialization
-        var x1 = xToPx(params.runners[0]),
-            x2 = xToPx(params.runners[params.runners.length - 1]),
+        var x1 = xToPx(params.runnersPos[0]),
+            x2 = xToPx(params.runnersPos[params.runnersPos.length - 1]),
             pos = {};
 
         pos[dir.start] = x1 + 'px';
