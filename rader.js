@@ -336,9 +336,11 @@
 
             event(elements.runners[i], 'mousedown', (function(n) {
                 return function(e) {
-                    e.preventDefault(); // Text selection disabling in Opera... and all other browsers?
-                    selection(); // Disable text selection in ie8
-                    drag = n; // Runner number to be dragged
+                    if (e.button != 2) {
+                        e.preventDefault(); // Text selection disabling in Opera... and all other browsers?
+                        selection(); // Disable text selection in ie8
+                        drag = n; // Runner number to be dragged
+                    }
                 }
             })(i));
         }
