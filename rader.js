@@ -310,10 +310,10 @@
 
             if (typeof params.change === 'function') {
                 params.change({
-                    minPos: pxToX(getMin(runnersCurrentPos)),
-                    maxPos: pxToX(getMax(runnersCurrentPos)),
-                    minVal: getMin(runnersCurrentPos),
-                    maxVal: getMax(runnersCurrentPos)
+                    minPos: getMin(runnersCurrentPos),
+                    maxPos: getMax(runnersCurrentPos),
+                    minVal: pxToX(getMin(runnersCurrentPos)),
+                    maxVal: pxToX(getMax(runnersCurrentPos))
                 });
             }
         }
@@ -381,4 +381,4 @@
     }
 
     window.rader = rader;
-})( window );
+})(window);
