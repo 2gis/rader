@@ -305,9 +305,9 @@
             }
         }
 
-        function update(e, force) {
-            if (e) {
-                var dx = e.clientX - x0drag,
+        function update(event, force) {
+            if (event) {
+                var dx = event.clientX - x0drag,
                     pos = {},
                     x;
 
@@ -316,25 +316,25 @@
                     runnersPrevPos[i] = runnersCurrentPos[i];
                 }
                 tryMoveRunner(drag, limitPos(x));
+            }
 
-                if (!isEqual(runnersCurrentPos, runnersPrevPos)) {
-                    // Updating activation state of all points
-                    updatePoints(force);
+            if (!isEqual(runnersCurrentPos, runnersPrevPos) || force) {
+                // Updating activation state of all points
+                updatePoints(force);
 
-                    // Positioning active track
-                    var pos = {};
-                    pos[dir.start] = getMin(runnersCurrentPos) + 'px';
-                    pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
-                    dom(elements.trackActive).css(pos);
+                // Positioning active track
+                var pos = {};
+                pos[dir.start] = getMin(runnersCurrentPos) + 'px';
+                pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
+                dom(elements.trackActive).css(pos);
 
-                    if (typeof params.change === 'function') {
-                        params.change({
-                            minPos: getMin(runnersCurrentPos),
-                            maxPos: getMax(runnersCurrentPos),
-                            minVal: pxToX(getMin(runnersCurrentPos)),
-                            maxVal: pxToX(getMax(runnersCurrentPos))
-                        });
-                    }
+                if (typeof params.change === 'function') {
+                    params.change({
+                        minPos: getMin(runnersCurrentPos),
+                        maxPos: getMax(runnersCurrentPos),
+                        minVal: pxToX(getMin(runnersCurrentPos)),
+                        maxVal: pxToX(getMax(runnersCurrentPos))
+                    });
                 }
             }
         }
