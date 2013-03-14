@@ -24,6 +24,7 @@
             drag = -1, // No runner dragged
             runnersInitialPos = [], // Current absolute runners position (before and after drag)
             runnersCurrentPos = [], // Current (in drag mode) absolute runners position
+            runnersPrevPos = [], // Before tryMove current runners position
             pointsInRagne = []; // Bool array
 
         // Event manager
@@ -114,6 +115,21 @@
             }
 
             return min;
+        }
+
+        // Returns true if two arrays is equal
+        function isEqual(arr1, arr2) {
+            if (arr1.length != arr2.length) {
+                return false;
+            }
+
+            for (i = 0 ; i < arr1.length ; i++) {
+                if (arr1[i] !== arr2[i]) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         function limitPos(x) {
@@ -296,25 +312,30 @@
                     x;
 
                 x = runnersInitialPos[drag] + dx;
+                for (i = 0 ; i < runnersCurrentPos.length ; i++) {
+                    runnersPrevPos[i] = runnersCurrentPos[i];
+                }
                 tryMoveRunner(drag, limitPos(x));
-            }
 
-            // Updating activation state of all points
-            updatePoints(force);
+                if (!isEqual(runnersCurrentPos, runnersPrevPos)) {
+                    // Updating activation state of all points
+                    updatePoints(force);
 
-            // Positioning active track
-            var pos = {};
-            pos[dir.start] = getMin(runnersCurrentPos) + 'px';
-            pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
-            dom(elements.trackActive).css(pos);
+                    // Positioning active track
+                    var pos = {};
+                    pos[dir.start] = getMin(runnersCurrentPos) + 'px';
+                    pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
+                    dom(elements.trackActive).css(pos);
 
-            if (typeof params.change === 'function') {
-                params.change({
-                    minPos: getMin(runnersCurrentPos),
-                    maxPos: getMax(runnersCurrentPos),
-                    minVal: pxToX(getMin(runnersCurrentPos)),
-                    maxVal: pxToX(getMax(runnersCurrentPos))
-                });
+                    if (typeof params.change === 'function') {
+                        params.change({
+                            minPos: getMin(runnersCurrentPos),
+                            maxPos: getMax(runnersCurrentPos),
+                            minVal: pxToX(getMin(runnersCurrentPos)),
+                            maxVal: pxToX(getMax(runnersCurrentPos))
+                        });
+                    }
+                }
             }
         }
 
