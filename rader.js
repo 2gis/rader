@@ -4,6 +4,8 @@
     var rader = function(params) {
         params.root = params.root || this;
 
+        $ = $ || params.$;
+
         return new init(params);
     };
 
