@@ -1,4 +1,6 @@
 window.onload = function() {
+    var runnersPos = [1, 3, 5];
+
     $('.rader_1').rader({
         trackActive: $('.rader_1').find('.rader__track-active'),
         points: $('.rader_1').find('.rader__point'),
@@ -6,7 +8,7 @@ window.onload = function() {
         pointInRangeCls: 'rader__point_range_in'
     });
 
-    $('.rader_2').rader({
+    var rader2 = $('.rader_2').rader({
         trackActive: $('.rader_2').find('.rader__track-active'),
         points: $('.rader_2').find('.rader__point'),
         runners: $('.rader_2').find('.rader__runner'),
@@ -17,6 +19,8 @@ window.onload = function() {
         bumpRadius: 44,
         transCls: 'rader__track_transition_on'
     });
+
+    rader2.posRunner(2, 4);
 
     rader({
         root: $('.rader_3'),

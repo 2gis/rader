@@ -307,6 +307,26 @@
             }
         }
 
+        function updatePositions(force) {
+            // Updating activation state of all points
+            updatePoints(force);
+
+            // Positioning active track
+            var pos = {};
+            pos[dir.start] = getMin(runnersCurrentPos) + 'px';
+            pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
+            dom(elements.trackActive).css(pos);
+
+            if (typeof params.change === 'function') {
+                params.change({
+                    minPos: getMin(runnersCurrentPos),
+                    maxPos: getMax(runnersCurrentPos),
+                    minVal: pxToX(getMin(runnersCurrentPos)),
+                    maxVal: pxToX(getMax(runnersCurrentPos))
+                });
+            }
+        }
+
         function update(event, force) {
             if (event) {
                 var dx = event.clientX - x0drag,
@@ -314,30 +334,16 @@
                     x;
 
                 x = runnersInitialPos[drag] + dx;
+
                 for (i = 0 ; i < runnersCurrentPos.length ; i++) {
                     runnersPrevPos[i] = runnersCurrentPos[i];
                 }
+
                 tryMoveRunner(drag, limitPos(x));
             }
 
             if (!isEqual(runnersCurrentPos, runnersPrevPos) || force) {
-                // Updating activation state of all points
-                updatePoints(force);
-
-                // Positioning active track
-                var pos = {};
-                pos[dir.start] = getMin(runnersCurrentPos) + 'px';
-                pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
-                dom(elements.trackActive).css(pos);
-
-                if (typeof params.change === 'function') {
-                    params.change({
-                        minPos: getMin(runnersCurrentPos),
-                        maxPos: getMax(runnersCurrentPos),
-                        minVal: pxToX(getMin(runnersCurrentPos)),
-                        maxVal: pxToX(getMax(runnersCurrentPos))
-                    });
-                }
+                updatePositions(force);
             }
         }
 
@@ -399,6 +405,17 @@
                 update(e);
             }
         });
+
+        this.posRunner = function(num, val) { // Emulating drag and drop
+            drag = num;
+            var x = xToPx(val);
+            tryMoveRunner(num, x);
+            runnersInitialPos[num] = runnersCurrentPos[num] = x;
+            updatePositions(1);
+            drag = -1;
+        };
+
+        return this;
     }
 
     if ($ && $.fn) {
