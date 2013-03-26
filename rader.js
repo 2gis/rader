@@ -13,6 +13,7 @@
     var init = function(params) {
         var elements = {},
             delta,
+            deltaPx,
             dir = { // Direction: left-to-right | top-to-bottom
                 start: 'left',
                 client: 'clientWidth',
@@ -67,6 +68,7 @@
         }
         
         delta = Math.abs(params.end - params.start);
+        deltaPx = elements.track[dir.client];
 
         // Validation (dev mode)
         if (params.pointsPos && params.pointsPos.length !== elements.points.length) {
@@ -135,8 +137,8 @@
         }
 
         function limitPos(x) {
-            if (x > elements.track[dir.client]) {
-                x = elements.track[dir.client];
+            if (x > deltaPx) {
+                x = deltaPx;
             }
 
             if (x < 0) {
@@ -150,7 +152,7 @@
         var xToPxMem = [];
         function xToPx(x) {
             if (xToPxMem[x] === undefined) {
-                xToPxMem[x] = ((x - params.start) / delta) * elements.track[dir.client];
+                xToPxMem[x] = ((x - params.start) / delta) * deltaPx;
             }
 
             return xToPxMem[x];
@@ -159,7 +161,7 @@
         var pxToXMem = [];
         function pxToX(px) {
             if (pxToXMem[px] === undefined) {
-                pxToXMem[px] = px / elements.track[dir.client] * delta + params.start;
+                pxToXMem[px] = px / deltaPx * delta + params.start;
             }
 
             return pxToXMem[px];
@@ -223,7 +225,7 @@
         }
 
         var stickTimeout;
-        function tryMoveRunner(num, x) {
+        function tryMoveRunner(drag, num, x) {
             var sign;
 
             function next(num) {
@@ -262,7 +264,7 @@
             if (runnersCurrentPos[next(num)] !== undefined && 
                 (((runnersCurrentPos[next(num)] - x) < params.bumpRadius && sign > 0) || 
                 ((x - runnersCurrentPos[next(num)]) < params.bumpRadius && sign < 0))) {
-                var xofNextRunner = tryMoveRunner(next(num), x + sign * params.bumpRadius);
+                var xofNextRunner = tryMoveRunner(drag, next(num), x + sign * params.bumpRadius);
 
                 if (x * sign > (xofNextRunner - params.bumpRadius * sign) * sign) {
                     x = getNextStableX(xofNextRunner - params.bumpRadius * sign, -sign);
@@ -317,8 +319,8 @@
             pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
             dom(elements.trackActive).css(pos);
 
-            if (typeof params.change === 'function') {
-                params.change({
+            if (params.onUpdate) {
+                params.onUpdate({
                     minPos: getMin(runnersCurrentPos),
                     maxPos: getMax(runnersCurrentPos),
                     minVal: pxToX(getMin(runnersCurrentPos)),
@@ -339,7 +341,7 @@
                     runnersPrevPos[i] = runnersCurrentPos[i];
                 }
 
-                tryMoveRunner(drag, limitPos(x));
+                tryMoveRunner(drag, drag, limitPos(x));
             }
 
             if (!isEqual(runnersCurrentPos, runnersPrevPos) || force) {
@@ -387,11 +389,22 @@
 
         // Dragend
         event(document, 'mouseup blur', function() {
-            for (var i = 0 ; i < runnersInitialPos.length ; i++) {
-                runnersInitialPos[i] = runnersCurrentPos[i]; // Updating initial pos at dragend
+            if (drag != -1) {
+                for (var i = 0 ; i < runnersInitialPos.length ; i++) {
+                    runnersInitialPos[i] = runnersCurrentPos[i]; // Updating initial pos at dragend
+                }
+
+                if (params.change) {
+                    params.change({
+                        minPos: getMin(runnersCurrentPos),
+                        maxPos: getMax(runnersCurrentPos),
+                        minVal: pxToX(getMin(runnersCurrentPos)),
+                        maxVal: pxToX(getMax(runnersCurrentPos))
+                    });
+                }
+                
+                selection(1); // Enable text selection
             }
-            
-            selection(1); // Enable text selection
             drag = -1;
         });
 
@@ -402,18 +415,20 @@
 
         event(document, 'mousemove', function(e) { // document, not window, for ie8
             if (drag != -1) {
-                update(e);
+                update(e, 0, 1);
             }
         });
 
         this.posRunner = function(num, val) { // Emulating drag and drop
-            drag = num;
             var x = xToPx(val);
-            tryMoveRunner(num, x);
+            tryMoveRunner(num, num, x);
             runnersInitialPos[num] = runnersCurrentPos[num] = x;
             updatePositions(1);
-            drag = -1;
         };
+
+        this.invalidate = function() {
+            updatePositions(1);
+        }
 
         return this;
     }
