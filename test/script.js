@@ -44,4 +44,21 @@ window.onload = function() {
         },
         dom: bonzo // DOM utility
     });
+
+    rader({
+        root: $('.rader_4'),
+        trackActive: $('.rader_4').find('.rader__track-active'),
+        points: $('.rader_4').find('.rader__point'),
+        runners: $('.rader_4').find('.rader__runner'),
+        pointInRangeCls: 'rader__point_range_in',
+        pointsPos: [0, 2.5, 5, 7.5, 10],
+        values: [10, 20, 100, 1000, 10000],
+        runnersPos: [2, 9],
+        stickingRadius: 5,
+        bumpRadius: 22,
+        scale: 'log',
+        change: function(e) {
+            console.log(e);
+        }
+    });
 }

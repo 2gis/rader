@@ -2,9 +2,10 @@
     var $ = window.jQuery;
 
     var rader = function(params) {
+        params = params || {};
         params.root = params.root || this;
 
-        $ = $ || params.$;
+        $ = params.$ || $;
 
         return new init(params);
     };
@@ -165,6 +166,37 @@
             }
 
             return pxToXMem[px];
+        }
+
+        // Преобразуем значение слайдена в заданную шкалу значений
+        function x2val(x) {
+            if (!params.values) return x;
+
+            // Ищем индекс i где в интервале i, i+1 находится x
+            var i = 0;
+            while (params.pointsPos[i+1] && !(x >= params.pointsPos[i] && x <= params.pointsPos[i+1])) {
+                i++;
+            }
+
+            // fallbacks when not in range
+            if (x < params.pointsPos[0]) return params.values[0];
+            if (x > params.pointsPos[params.pointsPos.length - 1]) return params.values[params.values.length - 1];
+
+            var x1 = params.pointsPos[i],
+                x2 = params.pointsPos[i + 1],
+                v1 = params.values[i],
+                v2 = params.values[i + 1],
+                val;
+
+                //debugger;
+
+            if (params.scale == 'log') {
+                val = Math.exp((x - x1) / (x2 - x1) * (Math.log(v2) - Math.log(v1)) + Math.log(v1));
+            } else { // linear
+                val = (x - x1) / (x2 - x1) * (v2 - v1) + v1;
+            }
+
+            return val;
         }
 
         // Getting coordinate of closest to @x point
@@ -398,8 +430,9 @@
                     params.change({
                         minPos: getMin(runnersCurrentPos),
                         maxPos: getMax(runnersCurrentPos),
-                        minVal: pxToX(getMin(runnersCurrentPos)),
-                        maxVal: pxToX(getMax(runnersCurrentPos))
+                        minVal: x2val(pxToX(getMin(runnersCurrentPos))),
+                        maxVal: x2val(pxToX(getMax(runnersCurrentPos))),
+
                     });
                 }
                 
