@@ -1,0 +1,112 @@
+.page {
+    margin: 0
+}
+.page__body {
+
+}
+.rader {
+    position: relative;
+    margin: 0 auto;
+    width: 600px;
+}
+.rader__track {
+    position: relative;
+    height: 6px;
+    /*margin: 10px;*/
+    border-radius: 3px;
+    background: url(../pics/gray.png) repeat-x;
+}
+.rader__track-active {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 8px;
+    border-radius: 4px;
+    background: url(../pics/blue.png) repeat-x;
+}
+.rader__point {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.rader__point:before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: -2px;
+    width: 10px;
+    height: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.rader__point_type_l:before {
+    background-image: url(../pics/point-left.png);
+}
+.rader__point_type_lr:before {
+    left: -5px;
+    background-image: url(../pics/point-center.png);
+}
+.rader__point_type_r:before {
+    background-image: url(../pics/point-right.png);
+}
+.rader__point_range_in {
+    z-index: 1;
+}
+.rader__point:after {
+    content: '';
+    opacity: 0;
+    position: absolute;
+    top: -3px;
+    left: -6px;
+    width: 12px;
+    height: 12px;
+    background: url(../pics/point_range_in.png) center no-repeat;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+}
+.rader__point_range_in:after {
+    opacity: 1;
+}
+
+.rader__runner {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 1;
+}
+.rader__runner:active {
+    z-index: 2;
+}
+.rader__runner:before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -11px;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background: url(../pics/runner.png);
+}
+.rader__runner_pos_left:before {
+    background: url(../pics/runner-left.png);
+}
+.rader__runner_pos_right:before {
+    background: url(../pics/runner-right.png);
+}
+.rader__track_transition_on .rader__runner {
+    -webkit-transition: all .1s ease-in;
+    transition: all .1s ease-in;
+}
+.rader__track_transition_on .rader__track-active {
+    -webkit-transition: all .1s ease-in;
+    transition: all .1s ease-in;
+}
+.rader {
+    min-height: 50px;
+    margin: 10px auto;
+}
+.out__input {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid #eee;
+}

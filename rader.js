@@ -44,7 +44,7 @@
 
         // Dom initialization
         elements.track = params.root[0];
-        elements.trackActive = params.trackActive[0] || params.trackActive;
+        elements.trackActive = params && (params.trackActive && params.trackActive[0] || params.trackActive);
         elements.points = params.points;
         elements.runners = params.runners;
 
@@ -55,26 +55,36 @@
             points: [],
             start: 0,
             end: 10,
-            pointsPos: []
+            pointsPos: [5], // Позиция точек, линейно связанная с пикселями (например мы разбиваем равномерно интервал на N частей)
+            runnersPos: []
         }
         if (params.pointsPos && params.pointsPos.length) {
             defaultParams.start = params.pointsPos[0];
             defaultParams.end = params.pointsPos[params.pointsPos.length - 1];
         }
-        defaultParams.runnersPos = [defaultParams.start, defaultParams.end];
+        if (params.runnersVal) { // Задали положение бегунков по значениям шкалы
+            for (var i = 0 ; i < params.runnersVal.length ; i++) {
+                defaultParams.runnersPos[i] = val2x(params.runnersVal[i]);
+            }
+        } else { // Если runnersPos не задали, как и не задали эквивалент runnersVal - берем крайние значения
+            defaultParams.runnersPos = [defaultParams.start, defaultParams.end];
+        }
         for (var key in defaultParams) {
             if (params[key] === undefined) {
                 params[key] = defaultParams[key];
             }
+        }
+        if (!params.values) {
+            params.values = params.pointsPos;
         }
         
         delta = Math.abs(params.end - params.start);
         deltaPx = elements.track[dir.client];
 
         // Validation (dev mode)
-        if (params.pointsPos && params.pointsPos.length !== elements.points.length) {
-            console.error('params.pointsPos.length !== elements.points.length');
-        }
+        // if (params.pointsPos && params.pointsPos.length !== elements.points.length) {
+        //     console.error('params.pointsPos.length !== elements.points.length');
+        // }
         if (params.runners.length !== elements.runners.length) {
             console.error('params.runners.length !== elements.runners.length');
         }
@@ -168,8 +178,11 @@
             return pxToXMem[px];
         }
 
-        // Преобразуем значение слайдена в заданную шкалу значений
+        // Преобразуем значение слайдера в заданную шкалу значений
         function x2val(x) {
+            var minVal = params.values[0],
+                maxVal = params.values[params.values.length - 1];
+
             if (!params.values) return x;
 
             // Ищем индекс i где в интервале i, i+1 находится x
@@ -178,17 +191,11 @@
                 i++;
             }
 
-            // fallbacks when not in range
-            if (x < params.pointsPos[0]) return params.values[0];
-            if (x > params.pointsPos[params.pointsPos.length - 1]) return params.values[params.values.length - 1];
-
             var x1 = params.pointsPos[i],
                 x2 = params.pointsPos[i + 1],
                 v1 = params.values[i],
                 v2 = params.values[i + 1],
                 val;
-
-                //debugger;
 
             if (params.scale == 'log') {
                 val = Math.exp((x - x1) / (x2 - x1) * (Math.log(v2) - Math.log(v1)) + Math.log(v1));
@@ -196,7 +203,44 @@
                 val = (x - x1) / (x2 - x1) * (v2 - v1) + v1;
             }
 
+            // Fallbacks when not in range (299.99999995 instead of 300)
+            if (val < minVal) return minVal;
+            if (val > maxVal) return maxVal;
+
             return val;
+        }
+
+        // Обратное преобразование - значения со шкалы в относительную линейную координату
+        function val2x(val) {
+            var minX = params.pointsPos[0],
+                maxX = params.pointsPos[params.pointsPos.length - 1];
+
+            if (!params.pointsPos) return val;
+
+            // Ищем индекс i где в интервале i, i+1 находится val
+            var i = 0;
+            while (params.values[i+1] && !(val >= params.values[i] && val <= params.values[i+1])) {
+                i++;
+            }
+
+            var val1 = params.values[i],
+                val2 = params.values[i + 1],
+                x1 = params.pointsPos[i],
+                x2 = params.pointsPos[i + 1],
+                x;
+
+            if (params.scale == 'log') {
+                //val = Math.exp((x - x1) / (x2 - x1) * (Math.log(v2) - Math.log(v1)) + Math.log(v1));
+                x = (Math.log(val) - Math.log(val1)) / (Math.log(val2) - Math.log(val1)) * (x2 - x1) + x1;
+            } else { // linear
+                x = (val - val1) / (val2 - val1) * (x2 - x1) + x1;
+            }
+
+            // Fallbacks when not in range (299.99999995 instead of 300)
+            if (x < minX) return minX;
+            if (x > maxX) return maxX;
+
+            return x;
         }
 
         // Getting coordinate of closest to @x point
@@ -381,6 +425,30 @@
             }
         }
 
+        // Вызывается по moveEnd
+        function onChange() {
+            if (params.change) {
+                params.change({
+                    minPos: getMin(runnersCurrentPos),
+                    maxPos: getMax(runnersCurrentPos),
+                    minVal: x2val(pxToX(getMin(runnersCurrentPos))),
+                    maxVal: x2val(pxToX(getMax(runnersCurrentPos)))
+                });
+            }
+        }
+
+        // Вызывается на событии move
+        function onMove() {
+            if (params.move) {
+                params.move({
+                    minPos: getMin(runnersCurrentPos),
+                    maxPos: getMax(runnersCurrentPos),
+                    minVal: x2val(pxToX(getMin(runnersCurrentPos))),
+                    maxVal: x2val(pxToX(getMax(runnersCurrentPos)))
+                });
+            }
+        }
+
         // Coordinates initialization
         for (var i = 0 ; i < params.pointsPos.length ; i++) {
             var pos = {};
@@ -426,15 +494,7 @@
                     runnersInitialPos[i] = runnersCurrentPos[i]; // Updating initial pos at dragend
                 }
 
-                if (params.change) {
-                    params.change({
-                        minPos: getMin(runnersCurrentPos),
-                        maxPos: getMax(runnersCurrentPos),
-                        minVal: x2val(pxToX(getMin(runnersCurrentPos))),
-                        maxVal: x2val(pxToX(getMax(runnersCurrentPos))),
-
-                    });
-                }
+                onChange();
                 
                 selection(1); // Enable text selection
             }
@@ -449,11 +509,21 @@
         event(document, 'mousemove', function(e) { // document, not window, for ie8
             if (drag != -1) {
                 update(e, 0, 1);
+                onMove();
             }
         });
 
-        this.posRunner = function(num, val) { // Emulating drag and drop
-            var x = xToPx(val);
+        this.posRunner = function(num, pos) { // Emulating drag and drop
+            var x = xToPx(pos);
+            
+            tryMoveRunner(num, num, x);
+            runnersInitialPos[num] = runnersCurrentPos[num] = x;
+            updatePositions(1);
+        };
+
+        this.valRunner = function(num, val) { // Emulating drag and drop
+            var x = xToPx(val2x(val));
+
             tryMoveRunner(num, num, x);
             runnersInitialPos[num] = runnersCurrentPos[num] = x;
             updatePositions(1);
@@ -461,7 +531,8 @@
 
         this.invalidate = function() {
             updatePositions(1);
-        }
+            onMove();
+        };
 
         return this;
     }
