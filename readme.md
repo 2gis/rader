@@ -12,6 +12,7 @@ http://diokuz.github.io/rader/
 
 ## Init params
 
+```js
 {
     // Root dom node (most parent) for slider, also - statical part of track
     root: '.slider',
@@ -55,6 +56,7 @@ http://diokuz.github.io/rader/
     // Event on drag,
     move: function(e) {}
 }
+```
 
 ## License
 
