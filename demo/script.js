@@ -79,8 +79,9 @@ window.onload = function() {
         pointsPos: [0, 2.5, 5, 7.5, 10],
         values: [10, 20, 100, 10000, 1000000],
         runnersVal: [20, 20000],
-        stickingRadius: 50,
+        stickingRadius: 10,
         bumpRadius: 22,
+        collapseVals: true,
         scale: 'log',
         transCls: 'rader__track_transition_on', // Not work when not set
         change: function(e) {
