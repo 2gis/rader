@@ -36,9 +36,10 @@
             dom,
             selector,
             x0drag,
+            i,
             drag = -1, // No runner dragged
-            runnersInitialPos = [], // Current absolute runners position (before and after drag)
-            runnersCurrentPos = [], // Current (in drag mode) absolute runners position
+            runnersInitialPos = [], // Current absolute runners position (before and after drag) in offsets!
+            runnersCurrentPx = [], // Current (in drag mode) absolute runners position
             runnersPrevPos = [], // Before tryMove current runners position
             pointsInRange = []; // Bool array
 
@@ -82,7 +83,7 @@
             params.values = params.pointsPos;
         }
         if (params.runnersVal && !params.runnersPos.length) { // Задали положение бегунков по значениям шкалы, но не задали runnersPos
-            for (var i = 0 ; i < params.runnersVal.length ; i++) {
+            for (i = 0 ; i < params.runnersVal.length ; i++) {
                 params.runnersPos[i] = val2x(params.runnersVal[i]);
             }
         }
@@ -325,9 +326,9 @@
             }
 
             // Moving direction
-            if (x > runnersCurrentPos[drag]) {
+            if (x > runnersCurrentPx[drag]) {
                 sign = +1;
-            } else if (x < runnersCurrentPos[drag]) {
+            } else if (x < runnersCurrentPx[drag]) {
                 sign = -1;
             } else {
                 return false; // No main coordinate change
@@ -353,9 +354,9 @@
             }
 
             // Bumping neighbour runners
-            if (runnersCurrentPos[next(num)] !== undefined &&
-                (((runnersCurrentPos[next(num)] - x) < params.bumpRadius && sign > 0) ||
-                ((x - runnersCurrentPos[next(num)]) < params.bumpRadius && sign < 0))) {
+            if (runnersCurrentPx[next(num)] !== undefined &&
+                (((runnersCurrentPx[next(num)] - x) < params.bumpRadius && sign > 0) ||
+                ((x - runnersCurrentPx[next(num)]) < params.bumpRadius && sign < 0))) {
                 var xofNextRunner = tryMoveRunner(drag, next(num), x + sign * params.bumpRadius);
 
                 if (x * sign > (xofNextRunner - params.bumpRadius * sign) * sign) {
@@ -364,9 +365,9 @@
             }
 
             // Positioning elements runner
-            runnersCurrentPos[num] = x;
+            runnersCurrentPx[num] = x;
             var pos = {};
-            pos[dir.start] = runnersCurrentPos[num] + 'px';
+            pos[dir.start] = runnersCurrentPx[num] + 'px';
             dom(elements.runners[num]).css(pos);
 
             return x;
@@ -376,17 +377,18 @@
         function updatePoints(force) {
             if (params.pointInRangeCls) {
                 // Cloning pointsInRange to pointsWasInRange
-                var pointsWasInRange = pointsInRange.slice();
+                var pointsWasInRange = pointsInRange.slice(),
+                    i;
 
-                for (var i = 0 ; i < elements.points.length ; i++) {
-                    if (xToPx(params.pointsPos[i]) >= runnersCurrentPos[0] && xToPx(params.pointsPos[i]) <= runnersCurrentPos[runnersCurrentPos.length - 1]) {
+                for (i = 0 ; i < elements.points.length ; i++) {
+                    if (xToPx(params.pointsPos[i]) >= runnersCurrentPx[0] && xToPx(params.pointsPos[i]) <= runnersCurrentPx[runnersCurrentPx.length - 1]) {
                         pointsInRange[i] = 1;
                     } else {
                         pointsInRange[i] = 0;
                     }
                 }
 
-                for (var i = 0 ; i < pointsInRange.length ; i++) {
+                for (i = 0 ; i < pointsInRange.length ; i++) {
                     if (pointsInRange[i] != pointsWasInRange[i] || force) { // Mega profit (+few ms per point change)
                         if (pointsInRange[i]) {
                             dom(elements.points[i]).addClass(params.pointInRangeCls);
@@ -404,17 +406,17 @@
 
             // Positioning active track
             var pos = {};
-            pos[dir.start] = getMin(runnersCurrentPos) + 'px';
-            pos[dir.size] = (getMax(runnersCurrentPos) - getMin(runnersCurrentPos)) + 'px';
+            pos[dir.start] = getMin(runnersCurrentPx) + 'px';
+            pos[dir.size] = (getMax(runnersCurrentPx) - getMin(runnersCurrentPx)) + 'px';
             dom(elements.trackActive).css(pos);
 
 
             // if (params.onUpdate) {
             //     params.onUpdate({
-            //         minPos: getMin(runnersCurrentPos),
-            //         maxPos: getMax(runnersCurrentPos),
-            //         minVal: pxToX(getMin(runnersCurrentPos)),
-            //         maxVal: pxToX(getMax(runnersCurrentPos))
+            //         minPos: getMin(runnersCurrentPx),
+            //         maxPos: getMax(runnersCurrentPx),
+            //         minVal: pxToX(getMin(runnersCurrentPx)),
+            //         maxVal: pxToX(getMax(runnersCurrentPx))
             //     });
             // }
         }
@@ -424,23 +426,23 @@
                 var dx = event.clientX - x0drag,
                     x;
 
-                x = runnersInitialPos[drag] + dx;
+                x = xToPx(runnersInitialPos[drag]) + dx;
 
-                for (var i = 0 ; i < runnersCurrentPos.length ; i++) {
-                    runnersPrevPos[i] = runnersCurrentPos[i];
+                for (var i = 0 ; i < runnersCurrentPx.length ; i++) {
+                    runnersPrevPos[i] = runnersCurrentPx[i];
                 }
 
                 tryMoveRunner(drag, drag, limitPos(x));
             }
 
-            if (!isEqual(runnersCurrentPos, runnersPrevPos) || force) {
+            if (!isEqual(runnersCurrentPx, runnersPrevPos) || force) {
                 updatePositions(force);
             }
         }
 
         function getEvent() {
-            var minPos = getMin(runnersCurrentPos), // px
-                maxPos = getMax(runnersCurrentPos),
+            var minPos = getMin(runnersCurrentPx), // px
+                maxPos = getMax(runnersCurrentPx),
                 minVal = x2val(pxToX(minPos)), // val
                 maxVal = x2val(pxToX(maxPos));
 
@@ -480,31 +482,40 @@
             }
         }
 
+        // подготавливает внутренние переменные для работы слайдера
+        function setup() {
+            runnersInitialPos = params.runnersPos.slice();
+            for (var i = 0 ; i < params.runnersPos.length ; i++) {
+                runnersCurrentPx[i] = xToPx(runnersInitialPos[i]);
+            }
+        }
+
         // Обновляет все размеры при ресайзе контейнера
         function updateSizes() {
             deltaPx = elements.track[dir.client];
             xToPxMem = [];
             pxToXMem = [];
 
-            var pos;
+            var pos,
+                i;
             // Coordinates initialization
-            for (var i = 0 ; i < params.pointsPos.length ; i++) {
+            for (i = 0 ; i < params.pointsPos.length ; i++) {
                 pos = {};
                 pos[dir.start] = xToPx(params.pointsPos[i]) + 'px';
                 dom(elements.points[i]).css(pos);
             }
 
             // Runners position & drag initialization
-            for (var i = 0 ; i < params.runnersPos.length ; i++) {
+            for (i = 0 ; i < runnersInitialPos.length ; i++) {
                 pos = {};
-                runnersCurrentPos[i] = runnersInitialPos[i] = xToPx(params.runnersPos[i]);
-                pos[dir.start] = runnersCurrentPos[i] + 'px';
+                runnersCurrentPx[i] = xToPx(runnersInitialPos[i]);
+                pos[dir.start] = runnersCurrentPx[i] + 'px';
                 dom(elements.runners[i]).css(pos);
             }
 
             // Active track position initialization
-            var x1 = xToPx(params.runnersPos[0]),
-                x2 = xToPx(params.runnersPos[params.runnersPos.length - 1]);
+            var x1 = xToPx(runnersInitialPos[0]),
+                x2 = xToPx(runnersInitialPos[runnersInitialPos.length - 1]);
 
             pos = {};
             pos[dir.start] = x1 + 'px';
@@ -512,19 +523,19 @@
             dom(elements.trackActive).css(pos);
         }
 
-        for (var i = 0 ; i < params.runnersPos.length ; i++) {
+        for (i = 0 ; i < params.runnersPos.length ; i++) {
             event(elements.runners[i], 'mousedown', (function(n) {
                 return function(e) {
                     if (e.button != 2) {
                         e.preventDefault(); // Text selection disabling in Opera... and all other browsers?
                         selection(); // Disable text selection in ie8
                         drag = n; // Runner number to be dragged
-                        console.log('n', n);
                     }
                 };
             })(i));
         }
 
+        setup();
         updateSizes();
 
         update(0, 1);
@@ -532,8 +543,8 @@
         // Dragend
         event(document, 'mouseup blur', function() {
             if (drag != -1) {
-                for (var i = 0 ; i < runnersInitialPos.length ; i++) {
-                    runnersInitialPos[i] = runnersCurrentPos[i]; // Updating initial pos at dragend
+                for (var i = 0, len = runnersInitialPos.length; i < len; i++) {
+                    runnersInitialPos[i] = pxToX(runnersCurrentPx[i]); // Updating initial pos at dragend
                 }
 
                 onChange();
@@ -557,18 +568,30 @@
 
         this.setPosition = function(num, pos) { // Emulating drag and drop
             var x = xToPx(pos);
-            
+
+
             tryMoveRunner(num, num, x);
-            runnersInitialPos[num] = runnersCurrentPos[num] = x;
+            runnersInitialPos[num] = pos;
+            runnersCurrentPx[num] = x;
             updatePositions(1);
         };
 
         this.setValue = function(num, val) { // Emulating drag and drop
-            var x = xToPx(val2x(val));
+            var pos = val2x(val),
+                x = xToPx(pos);
 
             tryMoveRunner(num, num, x);
-            runnersInitialPos[num] = runnersCurrentPos[num] = x;
+            runnersInitialPos[num] = pos;
+            runnersCurrentPx[num] = x;
             updatePositions(1);
+        };
+
+        this.getPosition = function(num) {
+            return runnersInitialPos[num];
+        };
+
+        this.getValue = function(num) {
+            return x2val(runnersInitialPos[num]);
         };
 
         this.invalidate = function() {

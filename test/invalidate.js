@@ -8,7 +8,7 @@ describe("Инвалидация радера", function() {
         sliderElem = $('#invalidate_slider');
         sliderElem.css('display', 'none');
 
-        rader = sliderElem.rader({
+        window.invalidateRader = rader = sliderElem.rader({
             trackActive: sliderElem.find('.rader__track-active'),
             points: sliderElem.find('.rader__point'),
             runners: sliderElem.find('.rader__runner'),
@@ -29,10 +29,16 @@ describe("Инвалидация радера", function() {
         });
 
         sliderElem.css('display', '');
+
+        rader.invalidate();
     });
 
-    it("радер ок", function() {
+    it("инвалидация не сбрасывает значения", function() {
         assert.ok(rader);
+
+        rader.setValue(0, 1);
+        rader.invalidate();
+        assert.equal(rader.getValue(0), 1);
     });
 
 });
