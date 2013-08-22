@@ -37,7 +37,7 @@ window.onload = function() {
         }
     });
 
-    rader2.posRunner(2, 4);
+    rader2.setPosition(2, 4);
 
     rader({
         root: $('.rader_3'),
