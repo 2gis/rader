@@ -240,6 +240,10 @@
                 i++;
             }
 
+            if (i == params.values.length - 1) {
+                i--;
+            }
+
             var val1 = params.values[i],
                 val2 = params.values[i + 1],
                 x1 = params.pointsPos[i],
