@@ -11,9 +11,17 @@
 
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <style type="text/css">
+        body {
+            padding: 16px;
+        }
+
+        .tests_body {
+            margin: 5px 60px;
+        }
+    </style>
 
     <title>Rader auto-test page</title>
-
 </head>
 
 <body>
@@ -26,15 +34,32 @@
 
         mocha.ui('bdd');
         mocha.reporter('html');
-
-        var twoRunners = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner rader__runner_pos_left"></div><div class="rader__runner rader__runner_pos_left"></div></div></div>';
     </script>
-    
-    <div class="wrapper">
-        
+
+    <div class="tests_body">
+        <div class="wrapper"></div>
+        <br/>
+
+        <div id="invalidate_slider" class="rader__track">
+            <div class="rader__point rader__point_type_l"></div>
+            <div class="rader__point rader__point_type_lr"></div>
+            <div class="rader__point rader__point_type_lr"></div>
+            <div class="rader__point rader__point_type_lr"></div>
+            <div class="rader__point rader__point_type_lr"></div>
+            <div class="rader__point rader__point_type_r"></div>
+
+            <!-- Активная часть трека -->
+            <div class="rader__track-active"></div>
+
+            <!-- Бегунки -->
+            <div class="rader__runner rader__runner_pos_left"></div>
+            <div class="rader__runner"></div>
+            <div class="rader__runner rader__runner_pos_right"></div>
+        </div>
     </div>
 
     <script src="dom.js"></script>
+    <script src="invalidate.js"></script>
 
     <script>
         if (window.mochaPhantomJS) { mochaPhantomJS.run(); }

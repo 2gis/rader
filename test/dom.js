@@ -16,10 +16,10 @@ function setPositionTests() {
 
 // Тесты на изменение ширины контейнера, содержащего радер
 function varWidth(rader, params) {
-    $('.wrapper').css({width: '200px'});
+    $('.wrapper').css({width: '400px'});
     rader.invalidate();
-    assert(rader.elements.track.offsetWidth == 200);
-    assert(rader.elements.trackActive.offsetWidth == 200);
+    assert.equal(rader.elements.track.offsetWidth, 400);
+    assert.equal(rader.elements.trackActive.offsetWidth, 400);
 }
 
 paramsList = [{
@@ -31,6 +31,7 @@ describe('Два бегунка.', function() {
         params;
 
     before(function() {
+        var twoRunners = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner rader__runner_pos_left"></div><div class="rader__runner rader__runner_pos_left"></div></div></div>';
         $('.wrapper').html(twoRunners);
 
         params = {
@@ -61,8 +62,8 @@ describe('Два бегунка.', function() {
             setPositionTests(rader, params);
         });
 
-        it('Изменение ширины', function() {
+        /*it('Изменение ширины', function() {
             varWidth(rader, params);
-        });
+        });*/
     // }
 });
