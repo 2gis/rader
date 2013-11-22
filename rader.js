@@ -415,14 +415,14 @@
             dom(elements.trackActive).css(pos);
 
 
-            // if (params.onUpdate) {
-            //     params.onUpdate({
-            //         minPos: getMin(runnersCurrentPx),
-            //         maxPos: getMax(runnersCurrentPx),
-            //         minVal: pxToX(getMin(runnersCurrentPx)),
-            //         maxVal: pxToX(getMax(runnersCurrentPx))
-            //     });
-            // }
+            if (params.onUpdate) {
+                params.onUpdate({
+                    minPos: getMin(runnersCurrentPx),
+                    maxPos: getMax(runnersCurrentPx),
+                    minVal: pxToX(getMin(runnersCurrentPx)),
+                    maxVal: pxToX(getMax(runnersCurrentPx))
+                });
+            }
         }
 
         function update(event, force) {
