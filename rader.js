@@ -604,8 +604,9 @@
                 x = xToPc(pos);
 
             tryMoveRunner(num, num, x);
-            runnersInitialPos[num] = pos;
-            runnersCurrentPc[num] = x;
+            for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
+                runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+            }
             updatePositions(1);
         };
 
