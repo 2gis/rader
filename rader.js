@@ -25,7 +25,8 @@
      * @param params.selector - css selector engine - native, sizzle or qwery
      */
     var init = function(params) {
-        var elements = {},
+        var self = this,
+            elements = {},
             delta,
             deltaPx, // Ширина всего трека в пикселях
             dir = { // Direction: left-to-right | top-to-bottom
@@ -40,7 +41,7 @@
             selector,
             x0drag,
             i,
-            drag = -1, // No runner dragged
+            drag = -1, // Runner number dragger right now
             runnersInitialPos = [], // Current absolute runners position (before and after drag) in offsets!
             runnersCurrentPc = [], // Current (in drag mode) absolute runners position
             runnersPrevPos = [], // Before tryMove current runners position
@@ -176,7 +177,7 @@
             return x;
         }
 
-        // Converting scale (user-defined) dimension to pixel dimension
+        // Converting scale (user-defined) dimension to percent dimension
         var xToPcMem = [];
         function xToPc(x) {
             if (xToPcMem[x] === undefined) {
@@ -293,11 +294,12 @@
         // Getting coordinate of closest to @x point from (sign > 0) right / bottom or (sign < 0) left / top
         function getNextStableX(x, sign) {
             var px, dx, dxCl, dxmin = Infinity, xret = x, xofClosestPoint = getXofClosestPoint(x);
+            var stick = params.stickingRadius * 100 / deltaPx; // actual stick in px
 
             dxCl = Math.abs(xofClosestPoint - x);
 
             // No x correction needed (because x is outside of points gravity)
-            if (dxCl > params.stickingRadius) { // 1
+            if (dxCl > stick) { // 1
                 return x;
             }
 
@@ -311,14 +313,14 @@
                 }
             }
 
-            if (dxmin < params.stickingRadius) { // 2, 4 (partially)
+            if (dxmin < stick) { // 2, 4 (partially)
                 return xret;
             }
 
-            if (dxmin >= params.stickingRadius) { // 3, 4
-                x = limitPos(x - dxCl * sign + params.stickingRadius * sign);
+            if (dxmin >= stick) { // 3, 4
+                x = limitPos(x - dxCl * sign + stick * sign);
 
-                if (Math.abs(xret - x) < params.stickingRadius) {
+                if (Math.abs(xret - x) < stick) {
                     return xret;
                 } else {
                     return x;
@@ -351,7 +353,8 @@
 
             // Sticking runner
             var xSticky = getXofClosestPoint(x);
-            if (xSticky !== undefined && xSticky !== x && Math.abs(xSticky - x) < params.stickingRadius) {
+            var stick = params.stickingRadius * 100 / deltaPx; // actual stick in px
+            if (xSticky !== undefined && xSticky !== x && Math.abs(xSticky - x) < stick) {
                 if (!stickTimeout && params.transCls) {
                     dom(elements.track).addClass(params.transCls);
                     stickTimeout = setTimeout(function() {
@@ -420,7 +423,6 @@
             pos[dir.size] = (getMax(runnersCurrentPc) - getMin(runnersCurrentPc)) + '%';
             dom(elements.trackActive).css(pos);
 
-
             if (params.onUpdate) {
                 params.onUpdate({
                     minPos: getMin(runnersCurrentPc),
@@ -451,6 +453,7 @@
             }
         }
 
+        // Возвращает объект с текущими параметрами для юзерских колбеков на события
         function getEvent() {
             var minPos = getMin(runnersCurrentPc), // pc
                 maxPos = getMax(runnersCurrentPc),
@@ -460,16 +463,23 @@
             // Слипание значений соседних бегунков
             if (params.collapseVals) {
                 var bump = params.bumpRadius * 100 / deltaPx; // actual bump in pc
-                if (maxPos - minPos <= bump + 1) {
-                    var x1 = getXofClosestPoint(minPos);
-                        // x2 = getXofClosestPoint(maxPos);
+                if (maxPos - minPos < bump + 1.e-5) { // Самые дальние бегунки на расстоянии слипания
+                    // var stickX = getXofClosestPoint(minPos); // Ближайшая точка прилипания
 
-                    if (x1 - minPos == 0) {
-                        maxVal = minVal;
-                    } else {
+                    // Сначала проверяем на попадание одной из точек на край диапазона
+                    // console.log('params.end', params.end, maxVal);
+                    if (maxPos == 100) {
                         minVal = maxVal;
+                    } else if (minPos == 0) {
+                        maxVal = minVal;
+                    } else { // Если не на краю, выставляет оба значения активного бегунка
+                        if (runnersCurrentPc[drag] === minPos) {
+                            maxVal = minVal;
+                        } else {
+                            minVal = maxVal;
+                        }
                     }
-               }
+                }
             }
 
             return {
@@ -563,6 +573,7 @@
                 
                 selection(1); // Enable text selection
             }
+
             drag = -1;
         });
 
@@ -581,10 +592,10 @@
         this.setPosition = function(num, pos) { // Emulating drag and drop
             var x = xToPc(pos);
 
-
             tryMoveRunner(num, num, x);
-            runnersInitialPos[num] = pos;
-            runnersCurrentPc[num] = x;
+            for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
+                runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+            }
             updatePositions(1);
         };
 
