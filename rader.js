@@ -35,7 +35,6 @@
                 size: 'width'
             },
             defaultParams,
-            event,
             dom,
             selector,
             x0drag,
@@ -47,11 +46,6 @@
             pointsInRange = []; // Bool array
 
         this.elements = elements;
-
-        // Event manager
-        event = params['event'] || function(elem, event, func, mode) {
-            $(elem)[mode || 'on'](event, func);
-        };
 
         // DOM utility
         dom = params['dom'] || $;
@@ -117,19 +111,17 @@
             if (!dom) {
                 error('No dom utility found');
             }
-            if (!event) {
-                error('No event manager found');
-            }
-        }
-
-        // Text selection start preventing
-        function dontStartSelect() {
-            return false;
         }
 
         // Text selection preventing on drag
         function selection(enable) {
-            event(document, 'selectstart', dontStartSelect, enable ? 'off' : 'on');
+            if (enable) {
+                $(document)['on']('selectstart.rader', function() {
+                    return false;
+                });
+            } else {
+                $(document)['off']('selectstart.rader');
+            }
         }
 
         function getMax(arr) {
@@ -552,7 +544,7 @@
         }
 
         for (i = 0 ; i < runnersPos.length ; i++) {
-            event(runners[i], 'mousedown', (function(n) {
+            $(runners[i])['on']('mousedown.rader', (function(n) {
                 return function(e) {
                     if (e.button != 2) {
                         e['preventDefault'](); // Text selection disabling in Opera... and all other browsers?
@@ -569,7 +561,7 @@
         update(0, 1);
 
         // Dragend
-        event(document, 'mouseup blur', function() {
+        $(document)['on']('mouseup.rader blur.rader', function() {
             if (drag != -1) {
                 for (var i = 0, len = runnersInitialPos.length; i < len; i++) {
                     runnersInitialPos[i] = pcToX(runnersCurrentPc[i]); // Updating initial pos at dragend
@@ -584,11 +576,11 @@
         });
 
         // Dragstart
-        event(document, 'mousedown', function(e) { // document, not window, for ie8
+        $(document)['on']('mousedown.rader', function(e) { // document, not window, for ie8
             x0drag = e.clientX;
         });
 
-        event(document, 'mousemove', function(e) { // document, not window, for ie8
+        $(document)['on']('mousemove.rader', function(e) { // document, not window, for ie8
             if (drag != -1) {
                 update(e, 0, 1);
                 onMove();
@@ -628,6 +620,12 @@
             updateSizes();
             updatePositions(1);
             onMove();
+        };
+
+        this['dispose'] = function() {
+            $(document)['off']('rader');
+
+            $(runners)['off']('rader');
         };
 
         return this;
