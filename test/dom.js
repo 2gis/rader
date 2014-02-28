@@ -1,12 +1,8 @@
 function initTests(rader, params) {
     assert.ok(rader);
-    assert.ok(rader.elements);
-    assert(rader.elements.track.nodeType == 1);
-    assert(rader.params === params, 'Параметры радера совпадают с переданными параметрами');
     assert(typeof rader.setPosition == 'function', 'Есть метод setPosition');
     assert(typeof rader.setValue == 'function', 'Есть метод setValue');
     assert(typeof rader.invalidate == 'function', 'Есть метод invalidate');
-    if (params.root) assert($(params.root)[0] === rader.elements.track, 'Корневой элемент совпадает с треком');
 }
 
 // Тесты на установку позиции

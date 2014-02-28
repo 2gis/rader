@@ -22,6 +22,9 @@
     "chai": "~1.7.0",
     "mocha-phantomjs": "~3.1.1",
     "mocha": "~1.12.0",
-    "grunt-contrib-jshint": "~0.6.3"
+    "grunt-contrib-jshint": "~0.6.3",
+    "jscs": "~1.2.4",
+    "grunt-jscs-checker": "~0.3.2",
+    "grunt-closure-compiler": "0.0.21"
   }
 }

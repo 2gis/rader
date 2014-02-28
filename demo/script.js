@@ -39,8 +39,7 @@ window.onload = function() {
 
     rader2.setPosition(2, 4);
 
-    rader({
-        root: $('.rader_3'),
+    $('.rader_3').rader({
         trackActive: $('.rader_3').find('.rader__track-active'),
         points: $('.rader_3').find('.rader__point'),
         runners: $('.rader_3').find('.rader__runner'),
@@ -70,8 +69,7 @@ window.onload = function() {
         }
     });
 
-    rader({
-        root: $('.rader_4'),
+    $('.rader_4').rader({
         trackActive: $('.rader_4').find('.rader__track-active'),
         points: $('.rader_4').find('.rader__point'),
         runners: $('.rader_4').find('.rader__runner'),

@@ -32,6 +32,25 @@ module.exports = function(grunt) {
                 }
             }
         },
+        'closure-compiler': {
+            frontend: {
+                closurePath: '/usr/local/Cellar/closure-compiler/20130823/libexec',
+                js: '<%= pkg.name %>.js',
+                jsOutputFile: '<%= pkg.name %>.min.js',
+                maxBuffer: 500,
+                options: {
+                    compilation_level: 'ADVANCED_OPTIMIZATIONS', // 'SIMPLE_OPTIMIZATIONS', // ADVANCED_OPTIMIZATIONS
+                    language_in: 'ECMASCRIPT5_STRICT'
+                },
+                noreport: true
+            }
+        },
+        jscs: {
+            src: ['<%= pkg.name %>.js'],
+            options: {
+                config: ".jscs.json"
+            }
+        },
         'mocha-phantomjs': {
             options: {
                 view: '1024x768'
@@ -43,10 +62,13 @@ module.exports = function(grunt) {
     grunt.loadTasks('tasks'); // Для grunt-mocha-phantomjs
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks("grunt-jscs-checker");
+    grunt.loadNpmTasks('grunt-closure-compiler');
 
-    grunt.registerTask('build', ['uglify:def']);
+    // grunt.registerTask('build', ['uglify:def']);
+    grunt.registerTask('build', ['closure-compiler']);
 
     grunt.registerTask('default', 'build');
     grunt.registerTask('test', ['build', 'mocha-phantomjs']);
-    grunt.registerTask('t', ['jshint', 'mocha-phantomjs']);
+    grunt.registerTask('t', ['jscs', 'jshint', 'mocha-phantomjs']);
 };
