@@ -423,10 +423,10 @@
 
             if (params['onUpdate']) {
                 params['onUpdate']({
-                    minPos: getMin(runnersCurrentPc),
-                    maxPos: getMax(runnersCurrentPc),
-                    minVal: pcToX(getMin(runnersCurrentPc)),
-                    maxVal: pcToX(getMax(runnersCurrentPc))
+                    'minPos': getMin(runnersCurrentPc),
+                    'maxPos': getMax(runnersCurrentPc),
+                    'minVal': pcToX(getMin(runnersCurrentPc)),
+                    'maxVal': pcToX(getMax(runnersCurrentPc))
                 });
             }
         }

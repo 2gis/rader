@@ -331,29 +331,34 @@ describe('Два бегунка.', function() {
             });
         });
 
+        describe('. onUpdate', function() {
+            it('. Аргумент-объект имеет правильный формат', function() {
+                var event;
+
+                reset();
+
+                params = {
+                    trackActive: $('.rader_2 .rader__track-active'),
+                    points: $('.rader_2 .rader__point'),
+                    runners: $('.rader_2 .rader__runner'),
+                    pointInRangeCls: 'rader__point_range_in',
+                    bumpRadius: '22',
+                    collapseVals: true,
+                    onUpdate: function(e) {
+                        event = e;
+                    }
+                };
+
+                rader = $('.rader_2').rader(params);
+
+                event = {};
+                rader.setValue(0, 3);
+
+                assert.equal(event.minVal, 3, 'Значение выставилось');
+                assert.equal(event.maxVal, 10);
+                assert(event.minPos, 'Поле minPos undefinded');
+                assert(event.maxPos, 'Поле maxPos undefinded');
+            });
+        });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 });
