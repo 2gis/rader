@@ -36,9 +36,9 @@ describe("Инвалидация радера", function() {
     it("инвалидация не сбрасывает значения", function() {
         assert.ok(rader);
 
-        rader.setValue(0, 1);
+        rader.val(0, 1);
         rader.invalidate();
-        assert.equal(rader.getValue(0), 1);
+        assert.equal(rader.val(0), 1);
     });
 
 });

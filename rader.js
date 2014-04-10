@@ -335,9 +335,10 @@
             }
 
             // Moving direction
-            if (x > runnersCurrentPc[drag]) {
+            var x0 = runnersCurrentPc[drag] || 0;
+            if (x > x0) {
                 sign = +1;
-            } else if (x < runnersCurrentPc[drag]) {
+            } else if (x < x0) {
                 sign = -1;
             } else {
                 return false; // No main coordinate change
@@ -504,8 +505,15 @@
 
         // подготавливает внутренние переменные для работы слайдера
         function setup() {
+            deltaPx = track[dir.client]; // Размер трека нужен уже сейчас
             runnersInitialPos = runnersPos.slice();
+
             for (var i = 0 ; i < runnersPos.length ; i++) {
+                runnersCurrentPc[i] = i;
+            }
+            runnersCurrentPc[i - 1] = 100; // Maxinize initial pos
+            for (var i = 0 ; i < runnersPos.length ; i++) {
+                self['pos'](i, runnersInitialPos[i]); // Эмулируем действия юзера для бампинга
                 runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
             }
         }
@@ -543,23 +551,6 @@
             dom(trackActive)['css'](pos);
         }
 
-        for (i = 0 ; i < runnersPos.length ; i++) {
-            $(runners[i])['on']('mousedown.rader', (function(n) {
-                return function(e) {
-                    if (e.button != 2) {
-                        e['preventDefault'](); // Text selection disabling in Opera... and all other browsers?
-                        selection(); // Disable text selection in ie8
-                        drag = n; // Runner number to be dragged
-                    }
-                };
-            })(i));
-        }
-
-        setup();
-        updateSizes();
-
-        update(0, 1);
-
         // Dragend
         $(document)['on']('mouseup.rader blur.rader', function() {
             if (drag != -1) {
@@ -587,32 +578,32 @@
             }
         });
 
-        this['setPosition'] = function(num, pos) { // Emulating drag and drop
-            var x = xToPc(pos);
+        this['pos'] = function(num, pos) { // Emulating drag and drop
+            if (pos != null) { // setter mode
+                var x = xToPc(pos);
 
-            tryMoveRunner(num, num, x);
-            for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
-                runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+                tryMoveRunner(num, num, x);
+                for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
+                    runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+                }
+                updatePositions(1);
             }
-            updatePositions(1);
-        };
 
-        this['setValue'] = function(num, val) { // Emulating drag and drop
-            var pos = val2x(val),
-                x = xToPc(pos);
-
-            tryMoveRunner(num, num, x);
-            for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
-                runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
-            }
-            updatePositions(1);
-        };
-
-        this['getPosition'] = function(num) {
             return runnersInitialPos[num];
         };
 
-        this['getValue'] = function(num) {
+        this['val'] = function(num, val) { // Emulating drag and drop
+            if (val != null) { // setter mode
+                var pos = val2x(val),
+                    x = xToPc(pos);
+
+                tryMoveRunner(num, num, x);
+                for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
+                    runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+                }
+                updatePositions(1);
+            }
+
             return x2val(runnersInitialPos[num]);
         };
 
@@ -627,6 +618,24 @@
 
             $(runners)['off']('rader');
         };
+
+        // Методы выше уже нужны, поэтому код здесь
+        for (i = 0 ; i < runnersPos.length ; i++) {
+            $(runners[i])['on']('mousedown.rader', (function(n) {
+                return function(e) {
+                    if (e.button != 2) {
+                        e['preventDefault'](); // Text selection disabling in Opera... and all other browsers?
+                        selection(); // Disable text selection in ie8
+                        drag = n; // Runner number to be dragged
+                    }
+                };
+            })(i));
+        }
+
+        setup();
+        updateSizes();
+
+        update(0, 1);
 
         return this;
     };

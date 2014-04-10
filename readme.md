@@ -58,6 +58,35 @@ http://diokuz.github.io/rader/
 }
 ```
 
+## Methods
+
+```js
+var rader = $('.rader').rader(params);
+
+/**
+ * Emulation of drag of runner number num (0, 1, 2...) to defined position pos (px)
+ * @return current position (px) of runner number num (0, 1, 2...)
+ */
+rader.pos(num, pos);
+
+/**
+ * Emulation of drag of runner number num (0, 1, 2...) to defined position of value val (user-defined dimension)
+ * @return current value (user-defined dimension) of runner number num (0, 1, 2...)
+ */
+rader.val(num, val);
+
+/**
+ * Invalidating all positions of runners and track
+ */
+rader.invalidate();
+
+/**
+ * Killing the rader instance
+ */
+rader.invalidate();
+
+```
+
 ## License
 
 MIT.

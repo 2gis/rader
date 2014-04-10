@@ -1,12 +1,12 @@
 function initTests(rader, params) {
     assert.ok(rader);
-    assert(typeof rader.setPosition == 'function', 'Есть метод setPosition');
-    assert(typeof rader.setValue == 'function', 'Есть метод setValue');
+    assert(typeof rader.pos == 'function', 'Есть метод pos');
+    assert(typeof rader.val == 'function', 'Есть метод val');
     assert(typeof rader.invalidate == 'function', 'Есть метод invalidate');
 }
 
 // Тесты на установку позиции
-function setPositionTests() {
+function posTests() {
 
 }
 
@@ -54,8 +54,8 @@ describe('Два бегунка.', function() {
             initTests(rader, params);
         });
 
-        it('Тесты setPosition', function() {
-            setPositionTests(rader, params);
+        it('Тесты pos', function() {
+            posTests(rader, params);
         });
 
         /*it('Изменение ширины', function() {
@@ -92,13 +92,13 @@ describe('Два бегунка.', function() {
         }
 
         // it.only('. Перемещение бегунка в позицию на bump от второго приводит к слипанию значений', function() {
-        //     rader.setPosition(1, 5);
-        //     rader.setPosition(0, 5);
+        //     rader.pos(1, 5);
+        //     rader.pos(0, 5);
 
         //     rader.invalidate();
 
-        //     var val0 = rader.getValue(0),
-        //         val1 = rader.getValue(1);
+        //     var val0 = rader.val(0),
+        //         val1 = rader.val(1);
 
         //     console.log('val0, val1', val0, val1);
         // });
@@ -106,14 +106,14 @@ describe('Два бегунка.', function() {
         it('. Перемещение левого бегунка в позицию правого приводит к смещению правого', function() {
             init();
 
-            rader.setPosition(1, 5);
-            rader.setPosition(0, 5);
+            rader.pos(1, 5);
+            rader.pos(0, 5);
             rader.invalidate();
 
-            var val0 = rader.getValue(0),
-                val1 = rader.getValue(1),
-                pos0 = rader.getPosition(0),
-                pos1 = rader.getPosition(1);
+            var val0 = rader.val(0),
+                val1 = rader.val(1),
+                pos0 = rader.pos(0),
+                pos1 = rader.pos(1);
 
             assert(val0 == 5, 'Значение для левого выставилось: ' + val0);
             assert(val0 != val1, 'Значение правого поменялось: ' + val1);
@@ -124,13 +124,13 @@ describe('Два бегунка.', function() {
         it('. Перемещение левого бегунка в крайне правую позицию приводит к правильному смещению обоих', function() {
             init();
 
-            rader.setPosition(0, 10);
+            rader.pos(0, 10);
             rader.invalidate();
 
-            var val0 = rader.getValue(0),
-                val1 = rader.getValue(1),
-                pos0 = rader.getPosition(0),
-                pos1 = rader.getPosition(1);
+            var val0 = rader.val(0),
+                val1 = rader.val(1),
+                pos0 = rader.pos(0),
+                pos1 = rader.pos(1);
 
             assert(val1 == 10, 'Значение правого бегунка - крайне правое');
             assert(val0 < val1, 'Значение левого бегунка левее крайне правого');
@@ -141,13 +141,13 @@ describe('Два бегунка.', function() {
         it('. Перемещение правого бегунка в крайне левую позицию приводит к правильному смещению обоих', function() {
             init();
 
-            rader.setPosition(1, 0);
+            rader.pos(1, 0);
             rader.invalidate();
 
-            var val0 = rader.getValue(0),
-                val1 = rader.getValue(1),
-                pos0 = rader.getPosition(0),
-                pos1 = rader.getPosition(1);
+            var val0 = rader.val(0),
+                val1 = rader.val(1),
+                pos0 = rader.pos(0),
+                pos1 = rader.pos(1);
 
             assert(val0 == 0, 'Значение левого бегунка - крайне левое');
             assert(val1 > val0, 'Значение правого бегунка правее крайне левого');
@@ -155,8 +155,8 @@ describe('Два бегунка.', function() {
             assert(pos1 > pos0, 'Позиция правого бегунка правее крайне левой');
         });
 
-        describe('. setPosition', function() {
-            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из getValue различаются', function(done) {
+        describe('. pos', function() {
+            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -170,8 +170,8 @@ describe('Два бегунка.', function() {
                         assert(e.minVal == e.maxVal, 'Значения слиплись');
                         assert(e.minVal == 5, 'Значения в событии равны выставленному');
 
-                        var val0 = rader.getValue(0),
-                            val1 = rader.getValue(1);
+                        var val0 = rader.val(0),
+                            val1 = rader.val(1);
 
                         assert(val0 == 5, 'Левое значение равно выставленному');
                         assert(val1 > 5, 'Правое значение больше левого');
@@ -184,13 +184,13 @@ describe('Два бегунка.', function() {
 
                 rader = $('.rader_2').rader(params);
 
-                rader.setPosition(1, 5);
-                rader.setPosition(0, 5);
+                rader.pos(1, 5);
+                rader.pos(0, 5);
                 $('.rader_2 .rader__runner_pos_left').trigger('mousedown');
                 rader.invalidate();
             });
 
-            it('. Аналогично, при помещении правого бегунка на левый, их значения в методе move слипаются по правому, но значения из getValue различаются', function(done) {
+            it('. Аналогично, при помещении правого бегунка на левый, их значения в методе move слипаются по правому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -204,8 +204,8 @@ describe('Два бегунка.', function() {
                         assert(e.maxVal == e.minVal, 'Значения слиплись');
                         assert(Math.abs(e.maxVal - 4.01) < 0.0001, 'Значения в событии равны выставленному');
 
-                        var val0 = rader.getValue(0),
-                            val1 = rader.getValue(1);
+                        var val0 = rader.val(0),
+                            val1 = rader.val(1);
 
                         assert(Math.abs(val1 - 4.01) < 0.0001, 'Правое значение равно выставленному');
                         assert(val0 < 4.01, 'Левое значение меньше правого');
@@ -218,8 +218,8 @@ describe('Два бегунка.', function() {
 
                 rader = $('.rader_2').rader(params);
 
-                rader.setPosition(0, 4);
-                rader.setPosition(1, 4.01);
+                rader.pos(0, 4);
+                rader.pos(1, 4.01);
                 $('.rader_2 .rader__runner_pos_right').trigger('mousedown');
                 rader.invalidate();
             });
@@ -238,8 +238,8 @@ describe('Два бегунка.', function() {
                         assert(e.maxVal == e.minVal, 'Значения слиплись');
                         assert(e.maxVal == 0, 'Значения в событии на крайне левой границе');
 
-                        var val0 = rader.getValue(0),
-                            val1 = rader.getValue(1);
+                        var val0 = rader.val(0),
+                            val1 = rader.val(1);
 
                         assert(val0 == 0, 'Левое значение на левой границе');
                         assert(val1 > 0, 'Правое значение больше левого');
@@ -252,8 +252,8 @@ describe('Два бегунка.', function() {
 
                 rader = $('.rader_2').rader(params);
 
-                rader.setPosition(0, 4);
-                rader.setPosition(1, 0);
+                rader.pos(0, 4);
+                rader.pos(1, 0);
                 $('.rader_2 .rader__runner_pos_right').trigger('mousedown');
                 rader.invalidate();
             });
@@ -272,8 +272,8 @@ describe('Два бегунка.', function() {
                         assert(e.maxVal == e.minVal, 'Значения слиплись');
                         assert(e.minVal == 10, 'Значения в событии на крайне правой границе');
 
-                        var val0 = rader.getValue(0),
-                            val1 = rader.getValue(1);
+                        var val0 = rader.val(0),
+                            val1 = rader.val(1);
 
                         assert(val1 == 10, 'Правое значение на правой границе');
                         assert(val0 < 10, 'Левое значение меньше правого');
@@ -286,17 +286,61 @@ describe('Два бегунка.', function() {
 
                 rader = $('.rader_2').rader(params);
 
-                rader.setPosition(1, 4);
-                rader.setPosition(0, 10);
+                rader.pos(1, 4);
+                rader.pos(0, 10);
                 done();
                 // $('.rader_2 .rader__runner_pos_left').trigger('mousedown');
                 // rader.invalidate();
             });
+
+            it('. Выставление двух бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
+                reset();
+
+                params = {
+                    trackActive: $('.rader_2 .rader__track-active'),
+                    points: $('.rader_2 .rader__point'),
+                    runners: $('.rader_2 .rader__runner'),
+                    pointInRangeCls: 'rader__point_range_in',
+                    bumpRadius: '22',
+                    collapseVals: true,
+                    runnersVal: [5, 5]
+                };
+
+                rader = $('.rader_2').rader(params);
+
+                var pos1 = $('.rader_2 .rader__runner_pos_left').offset().left,
+                    pos2 = $('.rader_2 .rader__runner_pos_right').offset().left;
+                
+                assert(Math.abs(pos2 - pos1) >= 22, 'Позиции должны быть разлеплены: ' + pos1 + ' ' + pos2);
+            });
+
+            it('. Выставление трёх бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
+                reset();
+
+                params = {
+                    trackActive: $('#invalidate_slider .rader__track-active'),
+                    points: $('#invalidate_slider .rader__point'),
+                    runners: $('#invalidate_slider .rader__runner'),
+                    pointInRangeCls: 'rader__point_range_in',
+                    bumpRadius: '22',
+                    collapseVals: true,
+                    runnersVal: [5, 5, 5]
+                };
+
+                rader = $('#invalidate_slider').rader(params);
+
+                var pos1 = $('#invalidate_slider .rader__runner_pos_left').offset().left,
+                    pos2 = $('#invalidate_slider .rader__runner').eq(1).offset().left,
+                    pos3 = $('#invalidate_slider .rader__runner_pos_right').offset().left;
+                
+                var dx = Math.max(Math.abs(pos2 - pos1), Math.abs(pos3 - pos1), Math.abs(pos2 - pos3));
+                assert(dx >= 22, 'Позиции должны быть разлеплены: ' + pos1 + ' ' + pos2 + ' ' + pos3);
+            });
         });
         
 
-        describe('. setValue', function() {
-            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из getValue различаются', function(done) {
+        describe('. val', function() {
+            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -310,8 +354,8 @@ describe('Два бегунка.', function() {
                         assert(e.minVal == e.maxVal, 'Значения слиплись');
                         assert(e.minVal == 5, 'Значения в событии равны выставленному');
 
-                        var val0 = rader.getValue(0),
-                            val1 = rader.getValue(1);
+                        var val0 = rader.val(0),
+                            val1 = rader.val(1);
 
                         assert(val0 == 5, 'Левое значение равно выставленному');
                         assert(val1 > 5, 'Правое значение больше левого');
@@ -324,8 +368,8 @@ describe('Два бегунка.', function() {
 
                 rader = $('.rader_2').rader(params);
 
-                rader.setValue(1, 5);
-                rader.setValue(0, 5);
+                rader.val(1, 5);
+                rader.val(0, 5);
                 $('.rader_2 .rader__runner_pos_left').trigger('mousedown');
                 rader.invalidate();
             });
@@ -352,7 +396,7 @@ describe('Два бегунка.', function() {
                 rader = $('.rader_2').rader(params);
 
                 event = {};
-                rader.setValue(0, 3);
+                rader.val(0, 3);
 
                 assert.equal(event.minVal, 3, 'Значение выставилось');
                 assert.equal(event.maxVal, 10);
