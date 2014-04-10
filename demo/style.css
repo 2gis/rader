@@ -53,16 +53,16 @@
     z-index: 1;
 }
 .rader__point:after {
-    content: '';
-    opacity: 0;
     position: absolute;
     top: -3px;
     left: -6px;
     width: 12px;
     height: 12px;
     background: url(../pics/point_range_in.png) center no-repeat;
-    -webkit-transition: all .3s;
-    transition: all .3s;
+    content: '';
+    opacity: 0;
+    -webkit-transition: opacity .3s linear;
+    transition: opacity .3s linear;
 }
 .rader__point_range_in:after {
     opacity: 1;

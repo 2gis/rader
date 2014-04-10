@@ -37,7 +37,7 @@ window.onload = function() {
         }
     });
 
-    rader2.setPosition(2, 4);
+    rader2.pos(2, 4);
 
     $('.rader_3').rader({
         trackActive: $('.rader_3').find('.rader__track-active'),
