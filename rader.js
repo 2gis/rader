@@ -63,9 +63,9 @@
         defaultParams = { // Default input parameters
             'stickingRadius': 0,
             'bumpRadius': runners[0][dir.offset], // firstRunner.offsetWidth | Height
-            'points': [],
-            'pointsPos': [0, 10], // Позиция точек, линейно связанная с пикселями (например мы разбиваем равномерно интервал на N частей)
-            'runnersPos': []
+            'points': [], // Ссылки на дом-элементы, которые будут привязаны к значениям pointsPos
+            'pointsPos': [0, 10], // Позиция виртуальных точек, линейно связанная с пикселями (например мы разбиваем равномерно интервал на N частей)
+            'runnersPos': [] // Начальная позиция бегунков
         };
 
         for (var key in defaultParams) {
@@ -85,6 +85,9 @@
         end = pointsPos[pointsPos.length - 1];
         if (!values) {
             values = pointsPos;
+        }
+        for (i = 0 ; i < values.length ; i++) {
+            values[i] = +values[i]; // str to float
         }
         if (runnersVal && !runnersPos.length) { // Задали положение бегунков по значениям шкалы, но не задали runnersPos
             for (i = 0 ; i < runnersVal.length ; i++) {
@@ -512,7 +515,7 @@
                 runnersCurrentPc[i] = i;
             }
             runnersCurrentPc[i - 1] = 100; // Maxinize initial pos
-            for (var i = 0 ; i < runnersPos.length ; i++) {
+            for (i = 0 ; i < runnersPos.length ; i++) {
                 self['pos'](i, runnersInitialPos[i]); // Эмулируем действия юзера для бампинга
                 runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
             }

@@ -405,4 +405,56 @@ describe('Два бегунка.', function() {
             });
         });
     });
+
+    describe('. Числа передаются в строках', function() {
+        function reset() {
+            $('.wrapper').html(twoRunners);
+        }
+
+        it('. values', function() {
+            var event;
+
+            reset();
+
+            params = {
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                values: ['33', '67'],
+                move: function(e) {
+                    event = e;
+                    console.log('e', e);
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+            rader.invalidate();
+
+            assert.equal(event.minVal, 33, 'Начальное значение должно выставиться числом');
+            assert.equal(event.maxVal, 67, 'Конечное значение должно выставиться числом');
+        });
+
+        it('. pointsPos', function() {
+            var event;
+
+            reset();
+
+            params = {
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                pointsPos: ['123', '456'],
+                move: function(e) {
+                    event = e;
+                    console.log('e', e);
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+            rader.invalidate();
+
+            assert.equal(event.minVal, 123, 'Начальное значение должно выставиться числом');
+            assert.equal(event.maxVal, 456, 'Конечное значение должно выставиться числом');
+        });
+    });
 });
