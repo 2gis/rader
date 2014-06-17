@@ -120,7 +120,7 @@ var count = 0;
 
         // iOs support
         function getClientX(event) {
-            return event.clientX || (((event['originalEvent'] || event)['touches'] || {})[0] || {})['pageX'];
+            return event.clientX || (((event['originalEvent'] || event)['touches'] || [])[0] || {})['pageX'];
         }
 
         // Text selection preventing on drag
