@@ -1,3 +1,5 @@
+var count = 0;
+
 /* jshint -W069 */
 (function(window, undefined) {
     var $ = window['$'],
@@ -114,6 +116,11 @@
             if (!dom) {
                 error('No dom utility found');
             }
+        }
+
+        // iOs support
+        function getClientX(event) {
+            return event.clientX || (((event['originalEvent'] || event)['touches'] || {})[0] || {})['pageX'];
         }
 
         // Text selection preventing on drag
@@ -438,7 +445,8 @@
         function update(event, force) {
             if (event) {
                 var pxperpc = 100 / deltaPx,
-                    dx = (event.clientX - x0drag) * pxperpc,
+                    clientX = getClientX(event),
+                    dx = (clientX - x0drag) * pxperpc,
                     x;
 
                 x = xToPc(runnersInitialPos[drag]) + dx;
@@ -555,7 +563,7 @@
         }
 
         // Dragend
-        $(document)['on']('mouseup.rader blur.rader', function() {
+        $(document)['on']('mouseup.rader blur.rader touchend.rader', function() {
             if (drag != -1) {
                 for (var i = 0, len = runnersInitialPos.length; i < len; i++) {
                     runnersInitialPos[i] = pcToX(runnersCurrentPc[i]); // Updating initial pos at dragend
@@ -570,11 +578,11 @@
         });
 
         // Dragstart
-        $(document)['on']('mousedown.rader', function(e) { // document, not window, for ie8
-            x0drag = e.clientX;
+        $(document)['on']('mousedown.rader touchstart.rader', function(e) { // document, not window, for ie8
+            x0drag = getClientX(e);
         });
 
-        $(document)['on']('mousemove.rader', function(e) { // document, not window, for ie8
+        $(document)['on']('mousemove.rader touchmove.rader', function(e) { // document, not window, for ie8
             if (drag != -1) {
                 update(e, 0, 1);
                 onMove();
@@ -624,7 +632,7 @@
 
         // Методы выше уже нужны, поэтому код здесь
         for (i = 0 ; i < runnersPos.length ; i++) {
-            $(runners[i])['on']('mousedown.rader', (function(n) {
+            $(runners[i])['on']('mousedown.rader touchstart.rader', (function(n) {
                 return function(e) {
                     if (e.button != 2) {
                         e['preventDefault'](); // Text selection disabling in Opera... and all other browsers?
