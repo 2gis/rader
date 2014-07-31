@@ -3,7 +3,8 @@ var count = 0;
 /* jshint -W069 */
 (function(window, undefined) {
     var $ = window['$'],
-        DEBUG = false;
+        DEBUG = false,
+        stage;
 
     var rader = function(params) {
         params = params || {};
@@ -47,6 +48,7 @@ var count = 0;
             runnersPrevPos = [], // Before tryMove current runners position
             pointsInRange = []; // Bool array
 
+        stage = 'init';
         this.elements = elements;
 
         // DOM utility
@@ -79,8 +81,8 @@ var count = 0;
         var pointsPos = params['pointsPos'],
             runnersPos = params['runnersPos'],
             runnersVal = params['runnersVal'],
-            start = params['start'],
-            end = params['end'],
+            start,
+            end,
             values = params['values'];
 
         start = pointsPos[0];
@@ -135,27 +137,11 @@ var count = 0;
         }
 
         function getMax(arr) {
-            var max = -1 / 0;
-
-            for (var i = 0, len = arr.length ; i < len ; i++) {
-                if (max < arr[i]) {
-                    max = arr[i];
-                }
-            }
-
-            return max;
+            return Math.max.apply(Math, arr);
         }
 
         function getMin(arr) {
-            var min = 1 / 0;
-
-            for (var i = 0, len = arr.length ; i < len ; i++) {
-                if (min > arr[i]) {
-                    min = arr[i];
-                }
-            }
-
-            return min;
+            return Math.min.apply(Math, arr);
         }
 
         // Returns true if two arrays is equal
@@ -345,19 +331,23 @@ var count = 0;
             }
 
             // Moving direction
-            var x0 = runnersCurrentPc[drag] || 0;
-            if (x > x0) {
+            if (stage == 'init') {
                 sign = +1;
-            } else if (x < x0) {
-                sign = -1;
             } else {
-                return false; // No main coordinate change
-            }
+                var x0 = runnersCurrentPc[drag] || 0;
+                if (x > x0) {
+                    sign = +1;
+                } else if (x < x0) {
+                    sign = -1;
+                } else {
+                    return false; // No main coordinate change
+                }
 
-            x = limitPos(x);
+                x = limitPos(x);
 
-            if (drag != num) { // Bumping runner
-                x = getNextStableX(x, sign);
+                if (drag != num) { // Bumping runner
+                    x = getNextStableX(x, sign);
+                }
             }
 
             // Sticking runner
@@ -520,9 +510,9 @@ var count = 0;
             runnersInitialPos = runnersPos.slice();
 
             for (var i = 0 ; i < runnersPos.length ; i++) {
-                runnersCurrentPc[i] = i;
+                runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
+                // runnersCurrentPc[i] = i;
             }
-            runnersCurrentPc[i - 1] = 100; // Maxinize initial pos
             for (i = 0 ; i < runnersPos.length ; i++) {
                 self['pos'](i, runnersInitialPos[i]); // Эмулируем действия юзера для бампинга
                 runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
@@ -647,6 +637,8 @@ var count = 0;
         updateSizes();
 
         update(0, 1);
+
+        stage = 'ready';
 
         return this;
     };

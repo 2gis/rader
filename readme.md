@@ -50,11 +50,14 @@ http://diokuz.github.io/rader/
     // CSS class on root element when dragged runners goes to stick (with transition) on point
     transCls: '.rader_trans',
 
-    // Event on drag end,
+    // Event on drag end (mouseup, touchend, generating only by real user)
     change: function(e) {},
 
-    // Event on drag,
-    move: function(e) {}
+    // Event on drag (mousemove, touchmove)
+    move: function(e) {},
+
+    // Event on drag end (generating by real user or by methods like setters .pos and .val)
+    onUpdate: function(e) {}
 }
 ```
 
@@ -83,7 +86,7 @@ rader.invalidate();
 /**
  * Killing the rader instance
  */
-rader.invalidate();
+rader.dispose();
 
 ```
 
