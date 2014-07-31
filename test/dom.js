@@ -27,7 +27,7 @@ describe('Два бегунка.', function() {
         params,
         twoRunners = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner rader__runner_pos_left"></div><div class="rader__runner rader__runner_pos_right"></div></div></div>';
 
-    before(function() {
+    function init() {
         $('.wrapper').html(twoRunners);
 
         params = {
@@ -47,14 +47,16 @@ describe('Два бегунка.', function() {
         };
 
         rader = $('.rader_2').rader(params);
-    });
+    }
 
     // for (var i = 0 ; i < 12 ; i++) {
         it('Тесты инициализации', function() {
+            init();
             initTests(rader, params);
         });
 
         it('Тесты pos', function() {
+            init();
             posTests(rader, params);
         });
 
@@ -62,6 +64,28 @@ describe('Два бегунка.', function() {
             varWidth(rader, params);
         });*/
     // }
+
+    it('. Установка начальных значений', function() {
+        $('.wrapper').html(twoRunners);
+        params = {
+            trackActive: $('.rader_2 .rader__track-active'),
+            points: $('.rader_2 .rader__point'),
+            runners: $('.rader_2 .rader__runner'),
+            pointInRangeCls: 'rader__point_range_in',
+            values: [1, 1000],
+            runnersVal: [100, 500]
+        };
+
+        rader = $('.rader_2').rader(params);
+
+        var val0 = rader.val(0),
+            val1 = rader.val(1);
+
+        assert.equal(val0, 100, 'Левое значение выставлено правильно');
+        assert.equal(val1, 500, 'Правое значение выставлено правильно');
+
+        rader.invalidate();
+    });
 
     describe('. Слипание бегунков', function() {
         function reset() {
