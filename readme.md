@@ -47,6 +47,9 @@ http://diokuz.github.io/rader/
     // Use 'log' value if want logarithmic scale
     scale: 'log',
 
+    // Which direction will be used (horizontal '-' by default or vertical '|') for slider
+    direction: '-',
+
     // CSS class on root element when dragged runners goes to stick (with transition) on point
     transCls: '.rader_trans',
 

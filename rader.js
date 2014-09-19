@@ -13,6 +13,24 @@ var count = 0;
         return new init(params);
     };
 
+    var directions = {
+        '-': { // Direction: left-to-right
+            start: 'left',
+            client: 'clientWidth',
+            offset: 'offsetWidth',
+            size: 'width',
+            clientX: 'clientX'
+        },
+
+        '|': { // top-to-bottom
+            start: 'top',
+            client: 'clientHeight',
+            offset: 'offsetHeight',
+            size: 'height',
+            clientX: 'clientY'
+        }
+    };
+
     if (DEBUG) {
         var error = function(msg) {
             throw new Error(msg);
@@ -31,12 +49,7 @@ var count = 0;
             elements = {},
             delta,
             deltaPx, // Ширина всего трека в пикселях
-            dir = { // Direction: left-to-right | top-to-bottom
-                start: 'left',
-                client: 'clientWidth',
-                offset: 'offsetWidth',
-                size: 'width'
-            },
+            dir = directions[params.direction || '-'],
             defaultParams,
             dom,
             selector,
@@ -122,7 +135,7 @@ var count = 0;
 
         // iOs support
         function getClientX(event) {
-            return event.clientX || (((event['originalEvent'] || event)['touches'] || [])[0] || {})['pageX'];
+            return event[dir.clientX] || (((event['originalEvent'] || event)['touches'] || [])[0] || {})['pageX'];
         }
 
         // Text selection preventing on drag

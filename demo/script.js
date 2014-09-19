@@ -7,7 +7,6 @@ window.onload = function() {
         runners: $('.rader_1').find('.rader__runner'),
         pointInRangeCls: 'rader__point_range_in',
         change: function(e) {
-            console.log(e);
             $('.out__min').text(e.minVal);
             $('.out__max').text(e.maxVal);
         },
@@ -82,6 +81,22 @@ window.onload = function() {
         collapseVals: true,
         scale: 'log',
         transCls: 'rader__track_transition_on', // Not work when not set
+        change: function(e) {
+            $('.out__min').text(e.minVal);
+            $('.out__max').text(e.maxVal);
+        },
+        move: function(e) {
+            $('.out__min-move').text(e.minVal);
+            $('.out__max-move').text(e.maxVal);
+        }
+    });
+
+    $('.rader_5').rader({
+        trackActive: $('.rader_5').find('.rader__track-active'),
+        points: $('.rader_5').find('.rader__point'),
+        runners: $('.rader_5').find('.rader__runner'),
+        pointInRangeCls: 'rader__point_range_in',
+        direction: '|',
         change: function(e) {
             $('.out__min').text(e.minVal);
             $('.out__max').text(e.maxVal);
