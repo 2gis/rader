@@ -36,7 +36,6 @@ describe('Два бегунка.', function() {
             runners: $('.rader_2 .rader__runner'),
             pointInRangeCls: 'rader__point_range_in',
             change: function(e) {
-                console.log(e);
                 $('.out__min').text(e.minVal);
                 $('.out__max').text(e.maxVal);
             },
@@ -447,7 +446,6 @@ describe('Два бегунка.', function() {
                 values: ['33', '67'],
                 move: function(e) {
                     event = e;
-                    console.log('e', e);
                 }
             };
 
@@ -470,7 +468,6 @@ describe('Два бегунка.', function() {
                 pointsPos: ['123', '456'],
                 move: function(e) {
                     event = e;
-                    console.log('e', e);
                 }
             };
 
@@ -479,6 +476,68 @@ describe('Два бегунка.', function() {
 
             assert.equal(event.minVal, 123, 'Начальное значение должно выставиться числом');
             assert.equal(event.maxVal, 456, 'Конечное значение должно выставиться числом');
+        });
+    });
+
+    describe('. Параметр click', function() {
+        function reset() {
+            $('.wrapper').html(twoRunners);
+        }
+
+        it('. false', function() {
+            var event;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                click: false,
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            var e = new jQuery.Event("click");
+            e.clientX = 400;
+            $(params.trackActive).trigger(e);
+
+            rader.invalidate();
+
+            assert.equal(event.minVal, 0, 'Начальное значение не должно измениться');
+            assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
+        });
+
+        it('. true', function() {
+            var event;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                click: true,
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            var e = new jQuery.Event("click");
+            e.clientX = 400;
+            $(params.trackActive).trigger(e);
+
+            rader.invalidate();
+
+            assert.notEqual(event.minVal, 0, 'Начальное значение должно измениться');
+            assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
         });
     });
 });

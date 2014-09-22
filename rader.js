@@ -1,3 +1,12 @@
+/**
+ * There several dimensions in rader:
+ * - x - pixels dimension
+ * - pos - user defined linear scale, 0..10 by default
+ * - % - percent linear scale, 0..100 all the time
+ * - Value - user defined scale, can be linear, exponentional and linear on intervals, any values allowed
+ * pixels are used only in the first place at the begining of the event, then px converted to %
+ */
+
 var count = 0;
 
 /* jshint -W069 */
@@ -16,18 +25,22 @@ var count = 0;
     var directions = {
         '-': { // Direction: left-to-right
             start: 'left',
+            offsetStart: 'offsetLeft',
             client: 'clientWidth',
             offset: 'offsetWidth',
             size: 'width',
-            clientX: 'clientX'
+            clientX: 'clientX',
+            pageX: 'pageX'
         },
 
         '|': { // top-to-bottom
             start: 'top',
+            offsetStart: 'offsetTop',
             client: 'clientHeight',
             offset: 'offsetHeight',
             size: 'height',
-            clientX: 'clientY'
+            clientX: 'clientY',
+            pageX: 'pageY'
         }
     };
 
@@ -49,7 +62,8 @@ var count = 0;
             elements = {},
             delta,
             deltaPx, // Ширина всего трека в пикселях
-            dir = directions[params.direction || '-'],
+            direction = params.direction || '-',
+            dir = directions[direction],
             defaultParams,
             dom,
             selector,
@@ -57,7 +71,7 @@ var count = 0;
             i,
             drag = -1, // Runner number dragger right now
             runnersInitialPos = [], // Current absolute runners position (before and after drag) in offsets!
-            runnersCurrentPc = [], // Current (in drag mode) absolute runners position
+            runnersCurrentPc = [], // Current (in drag mode) absolute (%) runners position
             runnersPrevPos = [], // Before tryMove current runners position
             pointsInRange = []; // Bool array
 
@@ -71,7 +85,8 @@ var count = 0;
         selector = params['selector'] || $;
 
         // Dom initialization
-        var track = params['root'][0];
+        var root = params['root'][0];
+        var track = params['track'];
         var trackActive = params['trackActive'];
         var points = params['points'];
         var runners = params['runners'];
@@ -108,7 +123,7 @@ var count = 0;
         }
         if (runnersVal && !runnersPos.length) { // Задали положение бегунков по значениям шкалы, но не задали runnersPos
             for (i = 0 ; i < runnersVal.length ; i++) {
-                runnersPos[i] = val2x(runnersVal[i]);
+                runnersPos[i] = val2pos(runnersVal[i]);
             }
         }
         if (!runnersPos.length) {
@@ -134,8 +149,14 @@ var count = 0;
         }
 
         // iOs support
-        function getClientX(event) {
-            return event[dir.clientX] || (((event['originalEvent'] || event)['touches'] || [])[0] || {})['pageX'];
+        function getClientX(event, parent) {
+            var x = event[dir.clientX] || (((event['originalEvent'] || event)['touches'] || [])[0] || {})[dir.pageX];
+
+            if (parent) {
+                x -= parent[dir.offsetStart];
+            }
+
+            return x;
         }
 
         // Text selection preventing on drag
@@ -172,6 +193,7 @@ var count = 0;
             return true;
         }
 
+        // Limiting the % position of x by [0..100]
         function limitPos(x) {
             if (x > 100) {
                 x = 100;
@@ -184,27 +206,28 @@ var count = 0;
             return x;
         }
 
-        // Converting scale (user-defined) dimension to percent dimension
-        var xToPcMem = [];
-        function xToPc(x) {
-            if (xToPcMem[x] === undefined) {
-                xToPcMem[x] = limitPos(((x - start) / delta) * 100);
+        // Converting pos dimension to % dimension
+        var posToPcMem = [];
+        function posToPc(x) {
+            if (posToPcMem[x] == null) {
+                posToPcMem[x] = limitPos(((x - start) / delta) * 100);
             }
 
-            return xToPcMem[x];
+            return posToPcMem[x];
         }
 
-        var pcToXMem = [];
-        function pcToX(px) {
-            if (pcToXMem[px] === undefined) {
-                pcToXMem[px] = px / 100 * delta + start;
+        // Converting % dimension to pos dimension
+        var pcToPosMem = [];
+        function pcToPos(px) {
+            if (pcToPosMem[px] == null) {
+                pcToPosMem[px] = px / 100 * delta + start;
             }
 
-            return pcToXMem[px];
+            return pcToPosMem[px];
         }
 
-        // Преобразуем значение слайдера в заданную шкалу значений
-        function x2val(x) {
+        // Converting pos dimension to Value dimension
+        function pos2val(x) {
             var minVal = values[0],
                 maxVal = values[values.length - 1];
 
@@ -240,8 +263,8 @@ var count = 0;
             return val;
         }
 
-        // Обратное преобразование - значения со шкалы в относительную линейную координату
-        function val2x(val) {
+        // Converting Value dimension to pos dimension
+        function val2pos(val) {
             var minX = pointsPos[0],
                 maxX = pointsPos[pointsPos.length - 1];
 
@@ -277,30 +300,43 @@ var count = 0;
             return x;
         }
 
-        // Getting coordinate of closest to @x point
-        function getXofClosestPoint(x) {
-            var xret = x,
-                dx,
-                px,
-                dxmin = 9999;
+        /**
+         * Getting coordinate of closest to pc point
+         *
+         * @param {Number} pc - coordinate in %
+         * @optional {Array} arr - array of X-coordinates, pointsPos by default
+         * @optional {String} dimension - supported value: 'pc', otherwise it 'pos'
+         * @return {Number} - closest static point coordinate in %
+         */
+        function getClosest(pc, arr, dimension) {
+            var pcret = pc,
+                delta,
+                runnerPc,
+                index = -1,
+                minDelta = 1 / 0; // +Infinity
 
-            for (var i = 0 ; i < pointsPos.length ; i++) {
-                px = xToPc(pointsPos[i]);
+            arr = arr || pointsPos;
+            for (var i = 0 ; i < arr.length ; i++) {
+                runnerPc = dimension == 'pc' ? arr[i] : posToPc(arr[i]);
 
-                dx = Math.abs(px - x);
+                delta = Math.abs(runnerPc - pc);
 
-                if (dx < dxmin) {
-                    xret = px;
-                    dxmin = dx;
+                if (delta < minDelta) {
+                    pcret = runnerPc;
+                    minDelta = delta;
+                    index = i;
                 }
             }
 
-            return xret;
+            return {
+                index: index,
+                pc: pcret
+            };
         }
 
         // Getting coordinate of closest to @x point from (sign > 0) right / bottom or (sign < 0) left / top
         function getNextStableX(x, sign) {
-            var px, dx, dxCl, dxmin = 1 / 0, xret = x, xofClosestPoint = getXofClosestPoint(x);
+            var px, dx, dxCl, dxmin = 1 / 0, xret = x, xofClosestPoint = getClosest(x).pc;
             var stick = params['stickingRadius'] * 100 / deltaPx; // actual stick in px
 
             dxCl = Math.abs(xofClosestPoint - x);
@@ -311,7 +347,7 @@ var count = 0;
             }
 
             for (var i = 0 ; i < pointsPos.length ; i++) { // 2
-                px = xToPc(pointsPos[i]);
+                px = posToPc(pointsPos[i]);
                 dx = Math.abs(px - x);
 
                 if ((px * sign > x * sign) && dx < dxmin) {
@@ -336,6 +372,12 @@ var count = 0;
         }
 
         var stickTimeout;
+        /**
+         * @param {Number} drag - index of initially moving runner
+         * @param {Number} num - index of currently moving runner
+         * @param {Number} x - %-coordinate of point, to where runner is pulled
+         * @return {Number} - new %-coordinate of current (num) runner
+         */
         function tryMoveRunner(drag, num, x) {
             var sign;
 
@@ -364,13 +406,13 @@ var count = 0;
             }
 
             // Sticking runner
-            var xSticky = getXofClosestPoint(x);
+            var xSticky = getClosest(x).pc;
             var stick = params['stickingRadius'] * 100 / deltaPx; // actual stick in px
             if (xSticky !== undefined && xSticky !== x && Math.abs(xSticky - x) < stick) {
                 if (!stickTimeout && params['transCls']) {
-                    dom(track)['addClass'](params['transCls']);
+                    dom(root)['addClass'](params['transCls']);
                     stickTimeout = setTimeout(function() {
-                        dom(track)['removeClass'](params['transCls']);
+                        dom(root)['removeClass'](params['transCls']);
                         stickTimeout = undefined;
                     }, 500);
                 }
@@ -406,7 +448,7 @@ var count = 0;
                     i;
 
                 for (i = 0 ; i < points.length ; i++) {
-                    if (xToPc(pointsPos[i]) >= runnersCurrentPc[0] && xToPc(pointsPos[i]) <= runnersCurrentPc[runnersCurrentPc.length - 1]) {
+                    if (posToPc(pointsPos[i]) >= runnersCurrentPc[0] && posToPc(pointsPos[i]) <= runnersCurrentPc[runnersCurrentPc.length - 1]) {
                         pointsInRange[i] = 1;
                     } else {
                         pointsInRange[i] = 0;
@@ -439,20 +481,18 @@ var count = 0;
                 params['onUpdate']({
                     'minPos': getMin(runnersCurrentPc),
                     'maxPos': getMax(runnersCurrentPc),
-                    'minVal': pcToX(getMin(runnersCurrentPc)),
-                    'maxVal': pcToX(getMax(runnersCurrentPc))
+                    'minVal': pcToPos(getMin(runnersCurrentPc)),
+                    'maxVal': pcToPos(getMax(runnersCurrentPc))
                 });
             }
         }
 
-        function update(event, force) {
-            if (event) {
+        function update(x, force) {
+            if (x != null) {
                 var pxperpc = 100 / deltaPx,
-                    clientX = getClientX(event),
-                    dx = (clientX - x0drag) * pxperpc,
-                    x;
+                    dx = (x - x0drag) * pxperpc;
 
-                x = xToPc(runnersInitialPos[drag]) + dx;
+                x = posToPc(runnersInitialPos[drag]) + dx;
 
                 for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
                     runnersPrevPos[i] = runnersCurrentPc[i];
@@ -470,14 +510,14 @@ var count = 0;
         function getEvent() {
             var minPos = getMin(runnersCurrentPc), // pc
                 maxPos = getMax(runnersCurrentPc),
-                minVal = x2val(pcToX(minPos)), // val
-                maxVal = x2val(pcToX(maxPos));
+                minVal = pos2val(pcToPos(minPos)), // val
+                maxVal = pos2val(pcToPos(maxPos));
 
             // Слипание значений соседних бегунков
             if (params['collapseVals']) {
                 var bump = params['bumpRadius'] * 100 / deltaPx; // actual bump in pc
                 if (maxPos - minPos < bump + 1.e-5) { // Самые дальние бегунки на расстоянии слипания
-                    // var stickX = getXofClosestPoint(minPos); // Ближайшая точка прилипания
+                    // var stickX = getClosest(minPos); // Ближайшая точка прилипания
 
                     // Сначала проверяем на попадание одной из точек на край диапазона
                     // console.log('end', end, maxVal);
@@ -519,45 +559,45 @@ var count = 0;
 
         // подготавливает внутренние переменные для работы слайдера
         function setup() {
-            deltaPx = track[dir.client]; // Размер трека нужен уже сейчас
+            deltaPx = root[dir.client]; // Размер трека нужен уже сейчас
             runnersInitialPos = runnersPos.slice();
 
             for (var i = 0 ; i < runnersPos.length ; i++) {
-                runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
+                runnersCurrentPc[i] = posToPc(runnersInitialPos[i]);
                 // runnersCurrentPc[i] = i;
             }
             for (i = 0 ; i < runnersPos.length ; i++) {
                 self['pos'](i, runnersInitialPos[i]); // Эмулируем действия юзера для бампинга
-                runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
+                runnersCurrentPc[i] = posToPc(runnersInitialPos[i]);
             }
         }
 
         // Обновляет все размеры при ресайзе контейнера
         function updateSizes() {
-            deltaPx = track[dir.client];
-            xToPcMem = [];
-            pcToXMem = [];
+            deltaPx = root[dir.client];
+            posToPcMem = [];
+            pcToPosMem = [];
 
             var pos,
                 i;
             // Coordinates initialization
             for (i = 0 ; i < pointsPos.length ; i++) {
                 pos = {};
-                pos[dir.start] = xToPc(pointsPos[i]) + '%';
+                pos[dir.start] = posToPc(pointsPos[i]) + '%';
                 dom(points[i])['css'](pos);
             }
 
             // Runners position & drag initialization
             for (i = 0 ; i < runnersInitialPos.length ; i++) {
                 pos = {};
-                runnersCurrentPc[i] = xToPc(runnersInitialPos[i]);
+                runnersCurrentPc[i] = posToPc(runnersInitialPos[i]);
                 pos[dir.start] = runnersCurrentPc[i] + '%';
                 dom(runners[i])['css'](pos);
             }
 
             // Active track position initialization
-            var x1 = xToPc(runnersInitialPos[0]),
-                x2 = xToPc(runnersInitialPos[runnersInitialPos.length - 1]);
+            var x1 = posToPc(runnersInitialPos[0]),
+                x2 = posToPc(runnersInitialPos[runnersInitialPos.length - 1]);
 
             pos = {};
             pos[dir.start] = x1 + '%';
@@ -565,12 +605,16 @@ var count = 0;
             dom(trackActive)['css'](pos);
         }
 
+        function updateInitialRunnersPos() {
+            for (var i = 0, len = runnersInitialPos.length; i < len; i++) {
+                runnersInitialPos[i] = pcToPos(runnersCurrentPc[i]); // Updating initial pos at dragend
+            }
+        }
+
         // Dragend
         $(document)['on']('mouseup.rader blur.rader touchend.rader', function() {
             if (drag != -1) {
-                for (var i = 0, len = runnersInitialPos.length; i < len; i++) {
-                    runnersInitialPos[i] = pcToX(runnersCurrentPc[i]); // Updating initial pos at dragend
-                }
+                updateInitialRunnersPos();
 
                 onChange();
 
@@ -587,19 +631,31 @@ var count = 0;
 
         $(document)['on']('mousemove.rader touchmove.rader', function(e) { // document, not window, for ie8
             if (drag != -1) {
-                update(e, 0, 1);
+                var clientX = getClientX(e);
+                update(clientX, 0, 1);
                 onMove();
             }
         });
 
+        if (params['click']) {
+            $(track || root)['on']('click.rader', function(e) {
+                var pc = getClientX(e, this) / this[dir.client] * 100; // to %
+                var closest = getClosest(pc, runnersCurrentPc, 'pc');
+
+                tryMoveRunner(closest.index, closest.index, pc);
+                var clientX = getClientX(e);
+                update(clientX, 1);
+                updateInitialRunnersPos();
+                onMove();
+            });
+        }
+
         this['pos'] = function(num, pos) { // Emulating drag and drop
             if (pos != null) { // setter mode
-                var x = xToPc(pos);
+                var x = posToPc(pos);
 
                 tryMoveRunner(num, num, x);
-                for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
-                    runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
-                }
+                updateInitialRunnersPos();
                 updatePositions(1);
             }
 
@@ -608,17 +664,17 @@ var count = 0;
 
         this['val'] = function(num, val) { // Emulating drag and drop
             if (val != null) { // setter mode
-                var pos = val2x(val),
-                    x = xToPc(pos);
+                var pos = val2pos(val),
+                    x = posToPc(pos);
 
                 tryMoveRunner(num, num, x);
                 for (var i = 0 ; i < runnersCurrentPc.length ; i++) {
-                    runnersInitialPos[i] = pcToX(runnersCurrentPc[i]);
+                    runnersInitialPos[i] = pcToPos(runnersCurrentPc[i]);
                 }
                 updatePositions(1);
             }
 
-            return x2val(runnersInitialPos[num]);
+            return pos2val(runnersInitialPos[num]);
         };
 
         this['invalidate'] = function() {
@@ -649,9 +705,11 @@ var count = 0;
         setup();
         updateSizes();
 
-        update(0, 1);
+        update(null, 1);
 
         stage = 'ready';
+
+        $(root)[0].setAttribute('data-rader-inited', direction);
 
         return this;
     };

@@ -107,5 +107,22 @@ window.onload = function() {
         }
     });
 
+    $('.rader_6').rader({
+        // track: $('.rader_6').find('.rader__track'),
+        trackActive: $('.rader_6').find('.rader__track-active'),
+        points: $('.rader_6').find('.rader__point'),
+        runners: $('.rader_6').find('.rader__runner'),
+        pointInRangeCls: 'rader__point_range_in',
+        click: true,
+        change: function(e) {
+            $('.out__min').text(e.minVal);
+            $('.out__max').text(e.maxVal);
+        },
+        move: function(e) {
+            $('.out__min-move').text(e.minVal);
+            $('.out__max-move').text(e.maxVal);
+        }
+    });
+
     // @TODO: тест с выставлением значений за пределами диапазона
 }
