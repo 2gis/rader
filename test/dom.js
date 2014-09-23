@@ -568,4 +568,77 @@ describe('Два бегунка.', function() {
             assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
         });
     });
+
+    describe('. Параметр runnersFreeze', function() {
+        function reset() {
+            $('.wrapper').html(twoRunners);
+        }
+
+        it('. Runner не двигается драгом ни бампингом', function() {
+            var event;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                runnersVal: [5, 9],
+                runnersFreeze: [1, 0],
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            dragRunner($('.rader_2'), 0, 20);
+            rader.invalidate();
+
+            assert.equal(event.minVal, 5, 'Начальное значение не должно измениться');
+            assert.equal(event.maxVal, 9, 'Конечное значение не должно измениться');
+
+            dragRunner($('.rader_2'), 1, 80);
+            rader.invalidate();
+
+            assert(Math.abs(event.minVal - 5) < 0.01, 'Начальное значение не должно измениться');
+            assert(Math.abs(event.maxVal - 8) < 0.01, 'Конечное значение должно измениться, ведь оно не заморожено');
+
+
+
+            dragRunner($('.rader_2'), 1, 20);
+            rader.invalidate();
+
+            assert(Math.abs(event.minVal - 5) < 0.01, 'Начальное значение не должно измениться');
+            assert(Math.abs(event.maxVal - 5) < 0.01, 'Конечное значение должно измениться, но должно блокироваться замороженным ранером');
+        });
+
+        it('. Клик около замороженного ранера приводит к смещению соседнего, хоть и более дальнего', function() {
+            var event;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                runnersVal: [5, 9],
+                runnersFreeze: [1, 0],
+                click: true,
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            clickTrack($('.rader_2'), 60);
+            rader.invalidate();
+
+            assert.equal(event.minVal, 5, 'Начальное значение не должно измениться');
+            assert(Math.abs(event.maxVal - 6) < 0.01, 'Конечное значение должно измениться ' + event.maxVal);
+        });
+    });
 });

@@ -91,6 +91,7 @@ window.onload = function() {
         }
     });
 
+    // Вертикальный
     $('.rader_5').rader({
         trackActive: $('.rader_5').find('.rader__track-active'),
         points: $('.rader_5').find('.rader__point'),
@@ -113,6 +114,9 @@ window.onload = function() {
         points: $('.rader_6').find('.rader__point'),
         runners: $('.rader_6').find('.rader__runner'),
         pointInRangeCls: 'rader__point_range_in',
+        runnersVal: [ 2, 4, 6 ],
+        runnersFreeze: [ 1, 0, 0 ],
+        bumpRadius: 22,
         click: true,
         change: function(e) {
             $('.out__min').text(e.minVal);

@@ -135,6 +135,9 @@
     .rader__runner_pos_bottom:before {
         background: url(../pics/runner-bottom.png);
         }
+    .rader__runner._freeze:before {
+        background: url(../pics/runner-freeze.png);
+        }
 .rader__track_transition_on .rader__runner {
     -webkit-transition: all .1s ease-in;
     transition: all .1s ease-in;

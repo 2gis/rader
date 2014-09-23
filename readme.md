@@ -17,7 +17,10 @@ http://diokuz.github.io/rader/
     // Root dom node (most parent) for slider, also - statical part of track
     root: '.slider',
 
-    // Active (movable) part of track
+    // Whole track
+    track: '.track',
+
+    // Active (between runners) part of track
     trackActive: '.track-active',
 
     // Dom elements of points
@@ -38,6 +41,9 @@ http://diokuz.github.io/rader/
     // Values on which runners will point on slider init
     runnersVal: [ 2, 600 ],
 
+    // Runners with 1 will be freezed (user will not be able to move them)
+    runnersFreeze: [ 1, 0 ],
+
     // Sticky radius for runner (around each point) in px
     stickingRadius: 40,
 
@@ -49,6 +55,9 @@ http://diokuz.github.io/rader/
 
     // Which direction will be used (horizontal '-' by default or vertical '|') for slider
     direction: '-',
+
+    // If true, click to track will move the closest non-freezed runner to click point
+    click: false,
 
     // CSS class on root element when dragged runners goes to stick (with transition) on point
     transCls: '.rader_trans',

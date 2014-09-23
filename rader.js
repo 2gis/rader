@@ -326,7 +326,7 @@ var count = 0;
 
                 delta = Math.abs(runnerPc - pc);
 
-                if (delta < minDelta) {
+                if (delta < minDelta && (!params['runnersFreeze'] || !params['runnersFreeze'][i])) {
                     pcret = runnerPc;
                     minDelta = delta;
                     index = i;
@@ -385,6 +385,8 @@ var count = 0;
          */
         function tryMoveRunner(drag, num, x) {
             var sign;
+
+            if (params['runnersFreeze'] && params['runnersFreeze'][num]) return runnersCurrentPc[num];
 
             function next(num) {
                 return num + 1 * sign;
@@ -646,8 +648,8 @@ var count = 0;
             $(track || root)['on']('click.rader', function(e) {
                 var isRunner;
 
-                for (var i = 0 ; i < params.runners.length ; i++) {
-                    isRunner = isRunner || e.target == params.runners[i];
+                for (var i = 0 ; i < params['runners'].length ; i++) {
+                    isRunner = isRunner || e.target == params['runners'][i];
                 }
 
                 if (!isRunner) { // if click was not inside one of the runners
@@ -698,8 +700,9 @@ var count = 0;
 
         this['dispose'] = function() {
             $(document)['off']('rader');
-
             $(runners)['off']('rader');
+            $(track)['off']('rader');
+            $(root)['off']('rader');
         };
 
         // Методы выше уже нужны, поэтому код здесь
