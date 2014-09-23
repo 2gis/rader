@@ -86,10 +86,8 @@ var count = 0;
 
         // Dom initialization
         var root = params['root'][0];
-        var track = params['track'];
-        var trackActive = params['trackActive'];
-        var points = params['points'];
-        var runners = params['runners'];
+        var runners = params['runners']
+        
 
         // Params initialization
         defaultParams = { // Default input parameters
@@ -101,12 +99,15 @@ var count = 0;
         };
 
         for (var key in defaultParams) {
-            if (params[key] === undefined) {
+            if (params[key] == null) {
                 params[key] = defaultParams[key];
             }
         }
 
-        var pointsPos = params['pointsPos'],
+        var track = params['track'],
+            trackActive = params['trackActive'],
+            points = params['points'],
+            pointsPos = params['pointsPos'],
             runnersPos = params['runnersPos'],
             runnersVal = params['runnersVal'],
             start,

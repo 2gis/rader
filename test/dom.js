@@ -25,7 +25,8 @@ paramsList = [{
 describe('Два бегунка.', function() {
     var rader,
         params,
-        twoRunners = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner rader__runner_pos_left"></div><div class="rader__runner rader__runner_pos_right"></div></div></div>';
+        twoRunners = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner rader__runner_pos_left"></div><div class="rader__runner rader__runner_pos_right"></div></div></div>',
+        oneRunner = '<div class="rader rader_2"><div class="rader__track"><div class="rader__track-active"></div><div class="rader__runner"></div></div></div>';
 
     function init() {
         $('.wrapper').html(twoRunners);
@@ -639,6 +640,36 @@ describe('Два бегунка.', function() {
 
             assert.equal(event.minVal, 5, 'Начальное значение не должно измениться');
             assert(Math.abs(event.maxVal - 6) < 0.01, 'Конечное значение должно измениться ' + event.maxVal);
+        });
+    });
+
+    describe('. Одиночка', function() {
+        function reset() {
+            $('.wrapper').html(oneRunner);
+        }
+
+        it('. Работает', function() {
+            var event;
+
+            reset();
+
+            params = {
+                runners: $('.rader_2 .rader__runner'),
+                runnersVal: [5],
+                values: [0, 1439],
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            dragRunner($('.rader_2'), 0, 20);
+            rader.invalidate();
+
+            assert(Math.abs(event.minPos - 20) < 0.01, 'Начальное значение не должно измениться ' + event.minPos);
+            // assert.equal(event.maxVal, 9, 'Конечное значение не должно измениться');
+            assert(true);
         });
     });
 });
