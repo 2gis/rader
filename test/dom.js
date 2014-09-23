@@ -87,6 +87,29 @@ describe('Два бегунка.', function() {
         rader.invalidate();
     });
 
+    it('. Установка начальных значений 2', function() {
+        $('.wrapper').html(twoRunners);
+        params = {
+            trackActive: $('.rader_2 .rader__track-active'),
+            points: $('.rader_2 .rader__point'),
+            runners: $('.rader_2 .rader__runner'),
+            pointInRangeCls: 'rader__point_range_in',
+            pointsPos: [0, 100, 200, 300, 400],
+            values: [0, 400],
+            runnersVal: [0, 200]
+        };
+
+        rader = $('.rader_2').rader(params);
+
+        var pos1 = params.runners[0].offsetLeft / $('.rader_2 .rader__track').width() * 100,
+            pos2 = params.runners[1].offsetLeft / $('.rader_2 .rader__track').width() * 100;
+
+        assert.equal(pos1, 0, 'Левое значение выставлено правильно');
+        assert(Math.abs(pos2 - 50) < 0.1, 'Правое значение выставлено правильно ' + pos2);
+
+        rader.invalidate();
+    });
+
     describe('. Слипание бегунков', function() {
         function reset() {
             $('.wrapper').html(twoRunners);

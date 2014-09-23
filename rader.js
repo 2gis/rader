@@ -122,6 +122,14 @@ var count = 0;
         for (i = 0 ; i < values.length ; i++) {
             values[i] = +values[i]; // str to float
         }
+        // Когда позиций точек много, а значения заданы только крайние, добавляем промежуточные значения
+        if (values.length == 2 && pointsPos.length > 2) {
+            var k = (values[1] - values[0]) / (pointsPos[pointsPos.length - 1] - pointsPos[0]);
+
+            for (i = 1 ; i < pointsPos.length ; i++) {
+                values[i] = values[0] + (pointsPos[i] - pointsPos[0]) * k;
+            }
+        }
         if (runnersVal && !runnersPos.length) { // Задали положение бегунков по значениям шкалы, но не задали runnersPos
             for (i = 0 ; i < runnersVal.length ; i++) {
                 runnersPos[i] = val2pos(runnersVal[i]);
@@ -269,12 +277,12 @@ var count = 0;
             return val;
         }
 
-        // Converting Value dimension to pos dimension
+        // Converting Value dimension to Pos dimension
         function val2pos(val) {
+            if (!pointsPos) return val;
+
             var minX = pointsPos[0],
                 maxX = pointsPos[pointsPos.length - 1];
-
-            if (!pointsPos) return val;
 
             // Ищем индекс i где в интервале i, i + 1 находится val
             var i = 0;
@@ -572,7 +580,6 @@ var count = 0;
 
             for (var i = 0 ; i < runnersPos.length ; i++) {
                 runnersCurrentPc[i] = posToPc(runnersInitialPos[i]);
-                // runnersCurrentPc[i] = i;
             }
             for (i = 0 ; i < runnersPos.length ; i++) {
                 self['pos'](i, runnersInitialPos[i]); // Эмулируем действия юзера для бампинга
