@@ -148,12 +148,17 @@ var count = 0;
             }
         }
 
-        // iOs support
-        function getClientX(event, parent) {
-            var x = event[dir.clientX] || (((event['originalEvent'] || event)['touches'] || [])[0] || {})[dir.pageX];
+        /**
+         * @param {Object} event - native or jquery click-event object
+         * @param {HTMLElement} relativeTo - element, top left corner of wich will be the coordinates origin (window by default)
+         * @return {Number} - position in px of click, absolute by default
+         */
+        function getClientX(event, relativeTo) {
+            var x = event[dir.clientX] || (((event['originalEvent'] || event)['touches'] || [])[0] || {})[dir.pageX]; // iOs support
 
-            if (parent) {
-                x -= parent[dir.offsetStart];
+            if (relativeTo) {
+                var rect = relativeTo['getBoundingClientRect']();
+                x -= rect[dir.start];
             }
 
             return x;
@@ -639,14 +644,22 @@ var count = 0;
 
         if (params['click']) {
             $(track || root)['on']('click.rader', function(e) {
-                var pc = getClientX(e, this) / this[dir.client] * 100; // to %
-                var closest = getClosest(pc, runnersCurrentPc, 'pc');
+                var isRunner;
 
-                tryMoveRunner(closest.index, closest.index, pc);
-                var clientX = getClientX(e);
-                update(clientX, 1);
-                updateInitialRunnersPos();
-                onMove();
+                for (var i = 0 ; i < params.runners.length ; i++) {
+                    isRunner = isRunner || e.target == params.runners[i];
+                }
+
+                if (!isRunner) { // if click was not inside one of the runners
+                    var pc = getClientX(e, this) / this[dir.client] * 100; // to %
+                    var closest = getClosest(pc, runnersCurrentPc, 'pc');
+
+                    tryMoveRunner(closest.index, closest.index, pc);
+                    var clientX = getClientX(e);
+                    update(clientX, 1);
+                    updateInitialRunnersPos();
+                    onMove();
+                }
             });
         }
 

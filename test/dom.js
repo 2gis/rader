@@ -539,5 +539,33 @@ describe('Два бегунка.', function() {
             assert.notEqual(event.minVal, 0, 'Начальное значение должно измениться');
             assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
         });
+
+        it('. Клик в runner не должен приводить к его перемещению', function() {
+            var event;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                click: true,
+                move: function(e) {
+                    event = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            var e = new jQuery.Event("click");
+            e.clientX = 400;
+            $(params.runners).eq(1).trigger(e);
+
+            rader.invalidate();
+
+            assert.equal(event.minVal, 0, 'Начальное значение не должно измениться');
+            assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
+        });
     });
 });
