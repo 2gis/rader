@@ -86,8 +86,7 @@ var count = 0;
 
         // Dom initialization
         var root = params['root'][0];
-        var runners = params['runners']
-        
+        var runners = params['runners'];
 
         // Params initialization
         defaultParams = { // Default input parameters
@@ -497,8 +496,8 @@ var count = 0;
                 params['onUpdate']({
                     'minPos': getMin(runnersCurrentPc),
                     'maxPos': getMax(runnersCurrentPc),
-                    'minVal': pcToPos(getMin(runnersCurrentPc)),
-                    'maxVal': pcToPos(getMax(runnersCurrentPc))
+                    'minVal': pos2val(pcToPos(getMin(runnersCurrentPc))),
+                    'maxVal': pos2val(pcToPos(getMax(runnersCurrentPc)))
                 });
             }
         }

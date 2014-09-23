@@ -87,7 +87,7 @@ describe('Два бегунка.', function() {
         rader.invalidate();
     });
 
-    it('. Установка начальных значений 2', function() {
+    it('. Доразбиение values', function() {
         $('.wrapper').html(twoRunners);
         params = {
             trackActive: $('.rader_2 .rader__track-active'),
@@ -108,6 +108,24 @@ describe('Два бегунка.', function() {
         assert(Math.abs(pos2 - 50) < 0.1, 'Правое значение выставлено правильно ' + pos2);
 
         rader.invalidate();
+    });
+
+    it('. Выставление значений только через values', function() {
+        var maxVal;
+        $('.wrapper').html(twoRunners);
+        params = {
+            trackActive: $('.rader_2 .rader__track-active'),
+            points: $('.rader_2 .rader__point'),
+            runners: $('.rader_2 .rader__runner'),
+            values: [1, 4],
+            onUpdate: function(e) {
+                maxVal = e.maxVal;
+            }
+        };
+
+        rader = $('.rader_2').rader(params);
+
+        assert.equal(maxVal, 4, 'Значение совпадает с values[1]');
     });
 
     describe('. Слипание бегунков', function() {
