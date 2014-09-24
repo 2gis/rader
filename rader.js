@@ -679,9 +679,11 @@ var count = 0;
                 tryMoveRunner(num, num, x);
                 updateInitialRunnersPos();
                 updatePositions(1);
+
+                return this;
             }
 
-            return runnersInitialPos[num];
+            return runnersInitialPos[num]; // Getter mode
         };
 
         this['val'] = function(num, val) { // Emulating drag and drop
@@ -694,6 +696,8 @@ var count = 0;
                     runnersInitialPos[i] = pcToPos(runnersCurrentPc[i]);
                 }
                 updatePositions(1);
+
+                return this;
             }
 
             return pos2val(runnersInitialPos[num]);

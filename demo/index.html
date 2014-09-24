@@ -10,7 +10,7 @@
 
     <script src="../js/jquery-1.9.0.js"></script>
 
-    <script src="../rader.min.js"></script>
+    <script src="../rader.js"></script>
     <script src="script.js"></script>
 
     <title></title>
@@ -19,102 +19,109 @@
 
 <body class="page__body">
 
-    <section class="page__col1">
+    <article class="page__main">
 
-        <div class="rader rader_1">
-            <p>Все необязательные параметры по-умолчанию.</p>
-            <div class="rader__track">
-                <!-- Активная часть трека -->
-                <div class="rader__track-active"></div>
+        <section class="page__col1">
+            <div class="page__colInner">
 
-                <!-- Бегунки -->
-                <div class="rader__runner rader__runner_pos_left"></div>
-                <div class="rader__runner rader__runner_pos_right"></div>
+                <div class="rader rader_1">
+                    <p>Все необязательные параметры по-умолчанию.</p>
+                    <div class="rader__track">
+                        <!-- Активная часть трека -->
+                        <div class="rader__track-active"></div>
+
+                        <!-- Бегунки -->
+                        <div class="rader__runner rader__runner_pos_left"></div>
+                        <div class="rader__runner rader__runner_pos_right"></div>
+                    </div>
+                </div>
+
+                <!--  -->
+
+                <div class="rader rader_2" style="display: none;">
+                    <p>3 бегунка, 6 точек не от нуля, небольшой радиус прилипания, радиус бодания больше, transition, рывок за пределы шкалы</p>
+                    <div class="rader__track">
+                        <div class="rader__point rader__point_type_l"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_r"></div>
+
+                        <!-- Активная часть трека -->
+                        <div class="rader__track-active"></div>
+
+                        <!-- Бегунки -->
+                        <div class="rader__runner rader__runner_pos_left"></div>
+                        <div class="rader__runner"></div>
+                        <div class="rader__runner rader__runner_pos_right"></div>
+                    </div>
+                </div>
+
+                <!--  -->
+
+                <div class="rader rader_3">
+                    <p>Очень большой радиус прилипания, перескок левого бегунка, без jQuery</p>
+                    <div class="rader__track rader__track_transition_on">
+                        <div class="rader__point rader__point_type_l"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_r"></div>
+
+                        <!-- Активная часть трека -->
+                        <div class="rader__track-active"></div>
+
+                        <!-- Бегунки -->
+                        <div class="rader__runner rader__runner_pos_left"></div>
+                        <div class="rader__runner"></div>
+                        <div class="rader__runner"></div>
+                        <div class="rader__runner rader__runner_pos_right"></div>
+                    </div>
+                </div>
+
+                <!--  -->
+
+                <div class="rader rader_4">
+                    <p>Нелинейные интервалы</p>
+                    <div class="rader__track">
+                        <div class="rader__point rader__point_type_l"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_lr"></div>
+                        <div class="rader__point rader__point_type_r"></div>
+
+                        <!-- Активная часть трека -->
+                        <div class="rader__track-active"></div>
+
+                        <!-- Бегунки -->
+                        <div class="rader__runner rader__runner_pos_left"></div>
+                        <div class="rader__runner rader__runner_pos_right"></div>
+                    </div>
+                </div>
+
+                <div class="rader rader_6">
+                    <p>Блокировка и клик в трек</p>
+                    <div class="rader__track">
+                        <!-- Активная часть трека -->
+                        <div class="rader__track-active"></div>
+
+                        <!-- Бегунки -->
+                        <div class="rader__runner rader__runner_pos_left _freeze"></div>
+                        <div class="rader__runner"></div>
+                        <div class="rader__runner rader__runner_pos_right"></div>
+                    </div>
+                </div>
+
             </div>
-        </div>
 
-        <!--  -->
+        </section>
 
-        <div class="rader rader_2" style="display: none;">
-            <p>3 бегунка, 6 точек не от нуля, небольшой радиус прилипания, радиус бодания больше, transition, рывок за пределы шкалы</p>
-            <div class="rader__track">
-                <div class="rader__point rader__point_type_l"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_r"></div>
-
-                <!-- Активная часть трека -->
-                <div class="rader__track-active"></div>
-
-                <!-- Бегунки -->
-                <div class="rader__runner rader__runner_pos_left"></div>
-                <div class="rader__runner"></div>
-                <div class="rader__runner rader__runner_pos_right"></div>
-            </div>
-        </div>
-
-        <!--  -->
-
-        <div class="rader rader_3">
-            <p>Очень большой радиус прилипания, перескок левого бегунка, без jQuery</p>
-            <div class="rader__track rader__track_transition_on">
-                <div class="rader__point rader__point_type_l"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_r"></div>
-
-                <!-- Активная часть трека -->
-                <div class="rader__track-active"></div>
-
-                <!-- Бегунки -->
-                <div class="rader__runner rader__runner_pos_left"></div>
-                <div class="rader__runner"></div>
-                <div class="rader__runner"></div>
-                <div class="rader__runner rader__runner_pos_right"></div>
-            </div>
-        </div>
-
-        <!--  -->
-
-        <div class="rader rader_4">
-            <p>Нелинейные интервалы</p>
-            <div class="rader__track">
-                <div class="rader__point rader__point_type_l"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_lr"></div>
-                <div class="rader__point rader__point_type_r"></div>
-
-                <!-- Активная часть трека -->
-                <div class="rader__track-active"></div>
-
-                <!-- Бегунки -->
-                <div class="rader__runner rader__runner_pos_left"></div>
-                <div class="rader__runner rader__runner_pos_right"></div>
-            </div>
-        </div>
-
-        <div class="rader rader_6">
-            <p>Блокировка и клик в трек</p>
-            <div class="rader__track">
-                <!-- Активная часть трека -->
-                <div class="rader__track-active"></div>
-
-                <!-- Бегунки -->
-                <div class="rader__runner rader__runner_pos_left _freeze"></div>
-                <div class="rader__runner"></div>
-                <div class="rader__runner rader__runner_pos_right"></div>
-            </div>
-        </div>
-
-    </section>
+    </article>
 
     <div class="rader rader_5 _vertical">
         <div class="rader__track">
@@ -124,6 +131,17 @@
             <!-- Бегунки -->
             <div class="rader__runner rader__runner_pos_top"></div>
             <div class="rader__runner rader__runner_pos_bottom"></div>
+        </div>
+    </div>
+
+    <div class="rader rader_7 _horizontal">
+        <div class="rader__track">
+            <!-- Активная часть трека -->
+            <div class="rader__track-active"></div>
+
+            <!-- Бегунки -->
+            <div class="rader__runner rader__runner_pos_left"></div>
+            <div class="rader__runner rader__runner_pos_right"></div>
         </div>
     </div>
 
