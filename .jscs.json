@@ -24,7 +24,7 @@
         "<",
         "<="
     ],
-    "disallowLeftStickedOperators": [
+    "requireSpaceBeforeBinaryOperators": [
         "?",
         "/",
         "*",
@@ -38,8 +38,8 @@
         "<",
         "<="
     ],
-    "requireRightStickedOperators": ["!"],
-    "disallowRightStickedOperators": [
+    "disallowSpaceAfterBinaryOperators": ["!"],
+    "requireSpaceAfterBinaryOperators": [
         "?",
         "/",
         "*",

@@ -1,0 +1,39 @@
+.rader {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    }
+
+.rader__track {
+    position: relative;
+    height: 6px;
+    border-radius: 3px;
+    background: #8ee0f1;
+    box-shadow:
+        1px 1px 1px rgba(255, 255, 255, .9),
+        1px 1px 2px rgba(0, 0, 0, .4) inset;
+    }
+.rader__runner {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 1;
+    cursor: pointer;
+    }
+.rader__runner:active {
+    z-index: 2;
+    }
+    .rader__runner:before {
+        content: '';
+        position: absolute;
+        top: -13px;
+        left: -7px;
+        width: 14px;
+        height: 32px;
+        border-radius: 3px;
+        background: #ff5252;
+        background-image: linear-gradient(to bottom, #ff5252, #ef4242);
+        box-shadow:
+            1px 1px 4px rgba(0, 0, 0, .1),
+            0 0 3px rgba(130, 220, 240, .9) inset;
+        }

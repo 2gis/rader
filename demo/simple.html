@@ -1,0 +1,42 @@
+<!doctype html>
+<html class="page">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <style type="text/css">
+        body {
+            padding: 30px;
+        }
+    </style>
+    <link rel="stylesheet" href="../rader.css" />
+
+    <script src="../js/jquery-1.9.0.js"></script>
+    <script src="../rader.js"></script>
+
+    <title>Simple rader demo</title>
+
+</head>
+
+<body class="page__body">
+
+    <div class="rader">
+        <div class="rader__track">
+            <!-- Runners -->
+            <div class="rader__runner _left"></div>
+            <div class="rader__runner _right"></div>
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            $('.rader').rader({
+                runners: '.rader__runner'
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+.page {
+    margin: 0;
+    height: 100%;
+    font: 14px/18px Helvetica, Arial;
+    }
+.page__body {
+    background: #f9f9f9;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    padding: 0px;
+    align-items: stretch;
+    box-sizing: border-box;
+    }
+
+.page__main {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    bottom: 60px;
+    right: 60px;
+    }
+    .page__col1 {
+        position: absolute;
+        left: 20%;
+        width: 46%;
+        padding: 0;
+        height: 100%;
+        }
+        .page__colInner {
+            position: absolute;
+            top: -61px;
+            bottom: -15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            }

@@ -86,7 +86,7 @@ var count = 0;
 
         // Dom initialization
         var root = params['root'][0];
-        var runners = params['runners'];
+        var runners = $(params['runners']);
 
         // Params initialization
         defaultParams = { // Default input parameters
@@ -640,6 +640,7 @@ var count = 0;
 
         // Dragstart
         $(document)['on']('mousedown.rader touchstart.rader', function(e) { // document, not window, for ie8
+            deltaPx = root[dir.client]; // recalc for resize
             x0drag = getClientX(e);
         });
 

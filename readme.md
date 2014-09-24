@@ -4,13 +4,51 @@ Rader - range slider.
 
 http://diokuz.github.io/rader/
 
+## How to use rader
+
+Make sure you have jQuery on your page.
+
+Pick some js
+
+```js
+<script src="rader.min.js"></script>
+```
+
+Then add some html and css
+
+```html
+<div class="rader">
+    <div class="rader__track">
+        <!-- Runners -->
+        <div class="rader__runner _left"></div>
+        <div class="rader__runner _right"></div>
+    </div>
+</div>
+
+<script src="rader.css"></script>
+```
+
+or make your own. If so, make sure you have a proper css.
+
+Then just call rader:
+
+```js
+$('.rader').rader({
+    runners: '.rader__runner'
+});
+```
+
+Thats it!
+
+For advanced usage see below.
+
 ## Features
 
 - 2, 3, 4... 10000000 runners per one slider
 - Bumping, sticking, transitioning...
 - Non-linear and exponent intervals support
 
-## Init params
+## API
 
 ```js
 {
@@ -80,13 +118,13 @@ var rader = $('.rader').rader(params);
 
 /**
  * Emulation of drag of runner number num (0, 1, 2...) to defined position pos (px)
- * @return current position (px) of runner number num (0, 1, 2...)
+ * @return current position (px) of runner number num (0, 1, 2...) in getter mode, and rader instance in setter mode
  */
 rader.pos(num, pos);
 
 /**
  * Emulation of drag of runner number num (0, 1, 2...) to defined position of value val (user-defined dimension)
- * @return current value (user-defined dimension) of runner number num (0, 1, 2...)
+ * @return current value (user-defined dimension) of runner number num (0, 1, 2...) in getter mode, and rader instance in setter mode
  */
 rader.val(num, val);
 
