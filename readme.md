@@ -2,6 +2,8 @@ Rader - range slider.
 
 ## Demo
 
+http://diokuz.github.io/rader/simple.html
+
 http://diokuz.github.io/rader/
 
 ## How to use rader
