@@ -669,6 +669,7 @@ var count = 0;
                     update(clientX, 1);
                     updateInitialRunnersPos();
                     onMove();
+                    onChange();
                 }
             });
         }

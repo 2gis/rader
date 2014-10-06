@@ -682,6 +682,40 @@ describe('Два бегунка.', function() {
             assert.equal(event.minVal, 5, 'Начальное значение не должно измениться');
             assert(Math.abs(event.maxVal - 6) < 0.01, 'Конечное значение должно измениться ' + event.maxVal);
         });
+
+        it('. Клик в трек вызывает change', function() {
+            var changeEvent,
+                moveEvent;
+
+            reset();
+
+            params = {
+                track: $('.rader_2 .rader__track'),
+                trackActive: $('.rader_2 .rader__track-active'),
+                points: $('.rader_2 .rader__point'),
+                runners: $('.rader_2 .rader__runner'),
+                runnersVal: [5, 9],
+                runnersFreeze: [1, 0],
+                click: true,
+                move: function(e) {
+                    moveEvent = e;
+                },
+                change: function(e) {
+                    changeEvent = e;
+                }
+            };
+
+            rader = $('.rader_2').rader(params);
+
+            clickTrack($('.rader_2'), 60);
+            rader.invalidate();
+
+            assert(Math.abs(moveEvent.minPos - 50) < 0.01);
+            assert(Math.abs(moveEvent.maxPos - 60) < 0.01);
+
+            assert(Math.abs(changeEvent.minPos - 50) < 0.01);
+            assert(Math.abs(changeEvent.maxPos - 60) < 0.01);
+        });
     });
 
     describe('. Одиночка', function() {
