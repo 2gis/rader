@@ -10,9 +10,8 @@
 var count = 0;
 
 /* jshint -W069 */
-(function(window, undefined) {
-    var $ = window['$'],
-        DEBUG = false,
+(function(window, $, undefined) {
+    var DEBUG = false,
         stage;
 
     var rader = function(params) {
@@ -744,4 +743,4 @@ var count = 0;
     };
 
     window['$']['fn']['rader'] = rader;
-})(window);
+})(window, $);
