@@ -42,22 +42,31 @@ $('.rader').rader({
 
 Thats it!
 
-For advanced usage see below.
+For advanced usage see API below.
 
 ## Features
 
 - 2, 3, 4... 10000000 runners per one slider
 - Bumping, sticking, transitioning...
 - Non-linear and exponent intervals support
+- Flexible markup support
+- (new!) 1 runner support
+- (new!) Vertical mode
 
 ## API
+
+Attention! the context for all input selectors is document, not 'root' param! Remember that and precisely define selectors for all your dom-elements.
+
+Document is chosed as default context because in that case you have more power: you may, for example, define one track inside root and two additional tracks outside root dom-element.
+
+Also, you can pass jQuery-objects instead if selectors, like $('.track') instead of '.track'.
 
 ```js
 {
     // Root dom node (most parent) for slider, also - statical part of track
     root: '.slider',
 
-    // Whole track
+    // Whole track.
     track: '.track',
 
     // Active (between runners) part of track
@@ -90,7 +99,7 @@ For advanced usage see below.
     // Minimal distance between two runners in px
     bumpRadius: 22,
 
-    // Use 'log' value if want logarithmic scale
+    // Use 'log' value if you want logarithmic scale
     scale: 'log',
 
     // Which direction will be used (horizontal '-' by default or vertical '|') for slider
@@ -136,7 +145,7 @@ rader.val(num, val);
 rader.invalidate();
 
 /**
- * Killing the rader instance
+ * Killing the rader instance, all its event listeners
  */
 rader.dispose();
 
