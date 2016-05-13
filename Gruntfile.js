@@ -1,48 +1,38 @@
 module.exports = function(grunt) {
+    var compilerPackage = require('google-closure-compiler');
+    compilerPackage.grunt(grunt);
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            appjs: {
-                options: {
-                    "indent": 4,
-                    "node": true,
-                    "browser": true,
-                    "jquery": true,
-                    "eqnull": true,
-                    "eqeqeq": false,
-                    "devel": false,
-                    "boss": true,
-                    "trailing": true,
-                    "loopfunc": true,
-                    "-W041": true,
-                    "-W015": true
-                },
-                src: ['rader.js', 'test/*.js']
-            }
-        },
-        uglify: {
+            all: ['Gruntfile.js', 'rader.js', 'test/**/*.js'],
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-            },
-            def: {
-                files: {
-                    '<%= pkg.name %>.min.js': ['<%= pkg.name %>.js'],
-                    'demo/<%= pkg.name %>.js': ['<%= pkg.name %>.js']
-                }
+                "indent": 4,
+                "node": true,
+                "browser": true,
+                "jquery": true,
+                "eqnull": true,
+                "eqeqeq": false,
+                "devel": false,
+                "boss": true,
+                "trailing": true,
+                "loopfunc": true,
+                "-W041": true,
+                "-W015": true
             }
         },
         'closure-compiler': {
-            frontend: {
-                closurePath: '/usr/local/Cellar/closure-compiler/20130823/libexec',
-                js: '<%= pkg.name %>.js',
-                jsOutputFile: '<%= pkg.name %>.min.js',
-                maxBuffer: 500,
-                options: {
-                    compilation_level: 'ADVANCED_OPTIMIZATIONS', // 'SIMPLE_OPTIMIZATIONS', // ADVANCED_OPTIMIZATIONS
-                    language_in: 'ECMASCRIPT5_STRICT'
+            my_target: {
+                files: {
+                    'rader.min.js': ['rader.js']
                 },
-                noreport: true
+                options: {
+                    compilation_level: 'ADVANCED',
+                    language_in: 'ECMASCRIPT5_STRICT',
+                    language_out: 'ECMASCRIPT5_STRICT',
+                    create_source_map: 'rader.min.js.map',
+                    output_wrapper: '%output%\n//# sourceMappingURL=rader.min.js.map'
+                }
             }
         },
         jscs: {
@@ -61,11 +51,8 @@ module.exports = function(grunt) {
 
     grunt.loadTasks('tasks'); // Для grunt-mocha-phantomjs
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks("grunt-jscs-checker");
-    grunt.loadNpmTasks('grunt-closure-compiler');
+    grunt.loadNpmTasks("grunt-jscs");
 
-    // grunt.registerTask('build', ['uglify:def']);
     grunt.registerTask('build', ['closure-compiler']);
 
     grunt.registerTask('default', 'build');
