@@ -632,9 +632,9 @@ var count = 0;
                 onChange();
 
                 selection(1); // Enable text selection
-            }
 
-            drag = -1;
+                drag = -1;
+            }
         });
 
         // Dragstart
@@ -655,8 +655,10 @@ var count = 0;
             $(track || root)['on']('click.rader', function(e) {
                 var isRunner;
 
-                for (var i = 0 ; i < params['runners'].length ; i++) {
-                    isRunner = isRunner || e.target == params['runners'][i];
+                for (var i = 0 ; i < params['runners'].length && !isRunner; i++) {
+                    // Checking parentNode because target can be a child of runner
+                    // https://github.com/2gis/rader/issues/20
+                    isRunner = e.target == params['runners'][i] || e.target.parentNode == params['runners'][i];
                 }
 
                 if (!isRunner) { // if click was not inside one of the runners
