@@ -65,7 +65,7 @@ describe('Два бегунка.', function() {
         });*/
     // }
 
-    it('. Установка начальных значений', function() {
+    it('Установка начальных значений', function() {
         $('.wrapper').html(twoRunners);
         params = {
             trackActive: $('.rader_2 .rader__track-active'),
@@ -87,7 +87,7 @@ describe('Два бегунка.', function() {
         rader.invalidate();
     });
 
-    it('. Доразбиение values', function() {
+    it('Доразбиение values', function() {
         $('.wrapper').html(twoRunners);
         params = {
             trackActive: $('.rader_2 .rader__track-active'),
@@ -110,7 +110,41 @@ describe('Два бегунка.', function() {
         rader.invalidate();
     });
 
-    it('. Выставление значений только через values', function() {
+    it('Работает на touch-устройствах', function() {
+        var changeEvent,
+            moveEvent;
+
+        $('.wrapper').html(twoRunners);
+
+        params = {
+            track: $('.rader_2 .rader__track'),
+            trackActive: $('.rader_2 .rader__track-active'),
+            points: $('.rader_2 .rader__point'),
+            runners: $('.rader_2 .rader__runner'),
+            runnersVal: [5, 9],
+            move: function(e) {
+                moveEvent = e;
+            },
+            change: function(e) {
+                changeEvent = e;
+            }
+        };
+
+        rader = $('.rader_2').rader(params);
+
+        dragRunnerTouch($('.rader_2'), 1, 80);
+        rader.invalidate();
+
+        assert(Math.abs(moveEvent.minVal - 5) < 0.01, 'Начальное значение не должно было поменяться т.кдвигался втроой раннер');
+        assert(Math.abs(moveEvent.maxVal - 8) < 0.01, 'Не вызывается событие move на touch-устройствах');
+
+        assert(Math.abs(changeEvent.minVal - 5) < 0.01, 'Начальное значение не должно было поменяться т.кдвигался втроой раннер');
+        assert(Math.abs(changeEvent.maxVal - 8) < 0.01, 'Не вызывается событие change на touch-устройствах');
+    });
+
+
+
+    it('Выставление значений только через values', function() {
         var maxVal;
         $('.wrapper').html(twoRunners);
         params = {
@@ -128,7 +162,7 @@ describe('Два бегунка.', function() {
         assert.equal(maxVal, 4, 'Значение совпадает с values[1]');
     });
 
-    describe('. Слипание бегунков', function() {
+    describe('Слипание бегунков', function() {
         function reset() {
             $('.wrapper').html(twoRunners);
         }
@@ -156,7 +190,7 @@ describe('Два бегунка.', function() {
             rader = $('.rader_2').rader(params);
         }
 
-        // it.only('. Перемещение бегунка в позицию на bump от второго приводит к слипанию значений', function() {
+        // it.only('Перемещение бегунка в позицию на bump от второго приводит к слипанию значений', function() {
         //     rader.pos(1, 5);
         //     rader.pos(0, 5);
 
@@ -168,7 +202,7 @@ describe('Два бегунка.', function() {
         //     console.log('val0, val1', val0, val1);
         // });
 
-        it('. Перемещение левого бегунка в позицию правого приводит к смещению правого', function() {
+        it('Перемещение левого бегунка в позицию правого приводит к смещению правого', function() {
             init();
 
             rader.pos(1, 5);
@@ -186,7 +220,7 @@ describe('Два бегунка.', function() {
             assert(pos0 != pos1, 'Позиция правого поменялась: ' + pos1);
         });
 
-        it('. Перемещение левого бегунка в крайне правую позицию приводит к правильному смещению обоих', function() {
+        it('Перемещение левого бегунка в крайне правую позицию приводит к правильному смещению обоих', function() {
             init();
 
             rader.pos(0, 10);
@@ -203,7 +237,7 @@ describe('Два бегунка.', function() {
             assert(pos0 < pos1, 'Позиция левого бегунка левее крайне правой');
         });
 
-        it('. Перемещение правого бегунка в крайне левую позицию приводит к правильному смещению обоих', function() {
+        it('Перемещение правого бегунка в крайне левую позицию приводит к правильному смещению обоих', function() {
             init();
 
             rader.pos(1, 0);
@@ -220,8 +254,8 @@ describe('Два бегунка.', function() {
             assert(pos1 > pos0, 'Позиция правого бегунка правее крайне левой');
         });
 
-        describe('. pos', function() {
-            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
+        describe('pos', function() {
+            it('При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -255,7 +289,7 @@ describe('Два бегунка.', function() {
                 rader.invalidate();
             });
 
-            it('. Аналогично, при помещении правого бегунка на левый, их значения в методе move слипаются по правому, но значения из val различаются', function(done) {
+            it('Аналогично, при помещении правого бегунка на левый, их значения в методе move слипаются по правому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -289,7 +323,7 @@ describe('Два бегунка.', function() {
                 rader.invalidate();
             });
 
-            it('. При угоне правого в крайне левое положение, значения слипаются в минимум диапазона (а не по правому)', function(done) {
+            it('При угоне правого в крайне левое положение, значения слипаются в минимум диапазона (а не по правому)', function(done) {
                 reset();
 
                 params = {
@@ -323,7 +357,7 @@ describe('Два бегунка.', function() {
                 rader.invalidate();
             });
 
-            it('. При угоне левого в крайне правое положение, значения слипаются в максимуме диапазона (а не по левому)', function(done) {
+            it('При угоне левого в крайне правое положение, значения слипаются в максимуме диапазона (а не по левому)', function(done) {
                 reset();
 
                 params = {
@@ -358,7 +392,7 @@ describe('Два бегунка.', function() {
                 // rader.invalidate();
             });
 
-            it('. Выставление двух бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
+            it('Выставление двух бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
                 reset();
 
                 params = {
@@ -379,7 +413,7 @@ describe('Два бегунка.', function() {
                 assert(Math.abs(pos2 - pos1) >= 22, 'Позиции должны быть разлеплены: ' + pos1 + ' ' + pos2);
             });
 
-            it('. Выставление трёх бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
+            it('Выставление трёх бегунков в одну позицию в момент инициализации не приводит к визуальному слипанию', function() {
                 reset();
 
                 params = {
@@ -404,8 +438,8 @@ describe('Два бегунка.', function() {
         });
         
 
-        describe('. val', function() {
-            it('. При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
+        describe('val', function() {
+            it('При помещении левого бегунка на правый, их значения в методе move слипаются по левому, но значения из val различаются', function(done) {
                 reset();
 
                 params = {
@@ -440,8 +474,8 @@ describe('Два бегунка.', function() {
             });
         });
 
-        describe('. onUpdate', function() {
-            it('. Аргумент-объект имеет правильный формат', function() {
+        describe('onUpdate', function() {
+            it('Аргумент-объект имеет правильный формат', function() {
                 var event;
 
                 reset();
@@ -471,12 +505,12 @@ describe('Два бегунка.', function() {
         });
     });
 
-    describe('. Числа передаются в строках', function() {
+    describe('Числа передаются в строках', function() {
         function reset() {
             $('.wrapper').html(twoRunners);
         }
 
-        it('. values', function() {
+        it('values', function() {
             var event;
 
             reset();
@@ -498,7 +532,7 @@ describe('Два бегунка.', function() {
             assert.equal(event.maxVal, 67, 'Конечное значение должно выставиться числом');
         });
 
-        it('. pointsPos', function() {
+        it('pointsPos', function() {
             var event;
 
             reset();
@@ -521,12 +555,12 @@ describe('Два бегунка.', function() {
         });
     });
 
-    describe('. Параметр click', function() {
+    describe('Параметр click', function() {
         function reset() {
             $('.wrapper').html(twoRunners);
         }
 
-        it('. false', function() {
+        it('false', function() {
             var event;
 
             reset();
@@ -554,7 +588,7 @@ describe('Два бегунка.', function() {
             assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
         });
 
-        it('. true', function() {
+        it('true', function() {
             var event;
 
             reset();
@@ -582,7 +616,7 @@ describe('Два бегунка.', function() {
             assert.equal(event.maxVal, 10, 'Конечное значение не должно измениться');
         });
 
-        it('. Клик в runner не должен приводить к его перемещению', function() {
+        it('Клик в runner не должен приводить к его перемещению', function() {
             var event;
 
             reset();
@@ -611,12 +645,12 @@ describe('Два бегунка.', function() {
         });
     });
 
-    describe('. Параметр runnersFreeze', function() {
+    describe('Параметр runnersFreeze', function() {
         function reset() {
             $('.wrapper').html(twoRunners);
         }
 
-        it('. Runner не двигается драгом ни бампингом', function() {
+        it('Runner не двигается драгом ни бампингом', function() {
             var event;
 
             reset();
@@ -656,7 +690,7 @@ describe('Два бегунка.', function() {
             assert(Math.abs(event.maxVal - 5) < 0.01, 'Конечное значение должно измениться, но должно блокироваться замороженным ранером');
         });
 
-        it('. Клик около замороженного ранера приводит к смещению соседнего, хоть и более дальнего', function() {
+        it('Клик около замороженного ранера приводит к смещению соседнего, хоть и более дальнего', function() {
             var event;
 
             reset();
@@ -683,7 +717,7 @@ describe('Два бегунка.', function() {
             assert(Math.abs(event.maxVal - 6) < 0.01, 'Конечное значение должно измениться ' + event.maxVal);
         });
 
-        it('. Клик в трек вызывает change', function() {
+        it('Клик в трек вызывает change', function() {
             var changeEvent,
                 moveEvent;
 
@@ -718,12 +752,12 @@ describe('Два бегунка.', function() {
         });
     });
 
-    describe('. Одиночка', function() {
+    describe('Одиночка', function() {
         function reset() {
             $('.wrapper').html(oneRunner);
         }
 
-        it('. Работает', function() {
+        it('Работает', function() {
             var event;
 
             reset();
